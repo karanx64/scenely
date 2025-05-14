@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@plugin "daisyui";
+/* just a VS code error. In actual, daisy ui is working fine*/
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
