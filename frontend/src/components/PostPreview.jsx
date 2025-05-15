@@ -27,11 +27,12 @@ export default function PostPreview({
           image={imageSrc}
           crop={crop}
           zoom={zoom}
-          // aspect={1}
+          aspect={1.8}
           onCropChange={setCrop}
           onZoomChange={setZoom}
           onCropComplete={onCropComplete}
           cropShape="rect"
+          minZoom={0.3}
         />
       ) : (
         <img
