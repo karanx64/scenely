@@ -19,7 +19,7 @@ export default function Home() {
     fetch(`${API_URL}/posts`)
       .then((res) => res.text()) // 👈 get raw text
       .then((text) => {
-        console.log("Raw response:", text); // 👀 see what the backend actually sends
+        // console.log("Raw response:", text); // 👀 see what the backend actually sends
         try {
           const data = JSON.parse(text);
           setPosts(data);
