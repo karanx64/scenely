@@ -1,178 +1,74 @@
-import React, { useState, useRef, useCallback } from "react";
-import ReactCrop from "react-image-crop";
-import "react-image-crop/dist/ReactCrop.css";
+// components/PostPreview.jsx
+import Cropper from "react-easy-crop";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const PostPreview = ({ images, onCropped }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [crop, setCrop] = useState();
-  const [completedCrop, setCompletedCrop] = useState(null);
-  const imageRef = useRef(null);
-  const previewCanvasRef = useRef(null);
-  const [croppedResults, setCroppedResults] = useState([]);
+export default function PostPreview({
+  images,
+  currentIndex,
+  setCurrentIndex,
+  crop,
+  zoom,
+  setCrop,
+  setZoom,
+  onCropComplete,
+  mode = "crop",
+}) {
+  const prev = () =>
+    setCurrentIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+  const next = () =>
+    setCurrentIndex((i) => (i === images.length - 1 ? 0 : i + 1));
 
-  const currentImage = images[currentIndex];
-
-  const onLoad = useCallback((img) => {
-    imageRef.current = img;
-
-    // Initialize crop after image loads
-    const aspect = 1;
-    const width = 90;
-
-    const height = (img.naturalHeight / img.naturalWidth) * width;
-
-    setCrop({
-      unit: "%",
-      x: 5,
-      y: 5,
-      width,
-      height,
-      aspect,
-    });
-  }, []);
-
-  const cropAndContinue = useCallback(() => {
-    if (
-      !completedCrop ||
-      !imageRef.current ||
-      !previewCanvasRef.current ||
-      !completedCrop.width ||
-      !completedCrop.height
-    ) {
-      console.warn("⛔ Missing crop or refs");
-      return;
-    }
-
-    const canvas = previewCanvasRef.current;
-    const image = imageRef.current;
-
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    const ctx = canvas.getContext("2d");
-
-    canvas.width = completedCrop.width;
-    canvas.height = completedCrop.height;
-
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.drawImage(
-      image,
-      completedCrop.x * scaleX,
-      completedCrop.y * scaleY,
-      completedCrop.width * scaleX,
-      completedCrop.height * scaleY,
-      0,
-      0,
-      completedCrop.width,
-      completedCrop.height
-    );
-
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        console.error("❌ Canvas is empty");
-        return;
-      }
-
-      const croppedFile = new File([blob], currentImage.file.name, {
-        type: "image/png",
-      });
-
-      const newPreview = URL.createObjectURL(croppedFile);
-      const updatedResults = [
-        ...croppedResults,
-        { id: currentImage.id, file: croppedFile, preview: newPreview },
-      ];
-      setCroppedResults(updatedResults);
-
-      if (currentIndex + 1 < images.length) {
-        setCurrentIndex(currentIndex + 1);
-        setCompletedCrop(null);
-        setCrop(undefined); // force recrop init
-      } else {
-        onCropped(updatedResults);
-      }
-    }, "image/png");
-  }, [
-    completedCrop,
-    currentImage,
-    currentIndex,
-    croppedResults,
-    images.length,
-    onCropped,
-  ]);
-
-  const prev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setCompletedCrop(null);
-      setCrop(undefined);
-    }
-  };
-
-  const next = () => {
-    if (currentIndex < images.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setCompletedCrop(null);
-      setCrop(undefined);
-    }
-  };
+  const imageSrc = images[currentIndex];
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="relative w-full max-w-sm aspect-square">
-        {currentImage ? (
-          <ReactCrop
-            crop={crop}
-            onChange={(newCrop) => setCrop(newCrop)}
-            onComplete={(c) => setCompletedCrop(c)}
-            aspect={1}
+    <div className="relative aspect-square bg-black overflow-hidden">
+      {mode === "crop" ? (
+        <Cropper
+          image={imageSrc}
+          crop={crop}
+          zoom={zoom}
+          aspect={1}
+          onCropChange={setCrop}
+          onZoomChange={setZoom}
+          onCropComplete={onCropComplete}
+        />
+      ) : (
+        <img
+          src={imageSrc}
+          alt={`Preview ${currentIndex}`}
+          className="object-contain h-full w-full"
+        />
+      )}
+
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
           >
-            <img
-              src={currentImage.preview}
-              onLoad={(e) => onLoad(e.target)}
-              alt="Crop target"
-              className="max-h-[80vh]"
+            <ChevronLeft size={24} />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
+          >
+            <ChevronRight size={24} />
+          </button>
+        </>
+      )}
+
+      {images.length > 1 && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+          {images.map((_, i) => (
+            <div
+              key={i}
+              className={`h-2 w-2 rounded-full ${
+                i === currentIndex ? "bg-white" : "bg-white/40"
+              }`}
             />
-          </ReactCrop>
-        ) : (
-          <p>No image found.</p>
-        )}
-
-        {/* Navigation arrows */}
-        <div className="absolute top-1/2 left-2 -translate-y-1/2">
-          {currentIndex > 0 && (
-            <button
-              onClick={prev}
-              className="bg-black/50 text-white p-1 rounded-full"
-            >
-              <ChevronLeft size={20} />
-            </button>
-          )}
+          ))}
         </div>
-        <div className="absolute top-1/2 right-2 -translate-y-1/2">
-          {currentIndex < images.length - 1 && (
-            <button
-              onClick={next}
-              className="bg-black/50 text-white p-1 rounded-full"
-            >
-              <ChevronRight size={20} />
-            </button>
-          )}
-        </div>
-      </div>
-
-      <button
-        onClick={cropAndContinue}
-        className="px-4 py-2 bg-red-600 text-white rounded"
-      >
-        Crop and Continue
-      </button>
-
-      <canvas ref={previewCanvasRef} style={{ display: "none" }} />
+      )}
     </div>
   );
-};
-
-export default PostPreview;
+}

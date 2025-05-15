@@ -1,134 +1,160 @@
+// components/UploadForm.jsx
 import { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import PostPreview from "../components/PostPreview";
-import { useNavigate } from "react-router-dom";
+import PostPreview from "./PostPreview";
+import getCroppedImg from "../utils/cropImage";
+import axios from "axios";
 
 export default function UploadForm() {
-  const [images, setImages] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
   const [croppedImages, setCroppedImages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
   const [caption, setCaption] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [showCropper, setShowCropper] = useState(false);
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const [step, setStep] = useState("select");
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const withPreview = files.map((file) => ({
-      id: uuidv4(),
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-    setImages(withPreview);
-    setCroppedImages([]);
-    setShowCropper(true);
-  };
+    const readers = files.map(
+      (file) =>
+        new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        })
+    );
 
-  const handleCropped = (cropped) => {
-    setCroppedImages(cropped);
-    setShowCropper(false);
-  };
-
-  const uploadToCloudinary = async (file) => {
-    const url = import.meta.env.VITE_CLOUDINARY_UPLOAD_URL;
-    const preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", preset);
-
-    const res = await fetch(url, {
-      method: "POST",
-      body: formData,
+    Promise.all(readers).then((images) => {
+      setSelectedImages(images);
+      setCroppedImages(new Array(images.length).fill(null));
+      setCurrentIndex(0);
+      setStep("crop");
     });
-
-    const data = await res.json();
-    if (!res.ok)
-      throw new Error(data.error?.message || "Cloudinary upload failed");
-    return data.secure_url;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setUploading(true);
-
+  const handleCropComplete = async (_, croppedAreaPixels) => {
     try {
-      const uploadedUrls = await Promise.all(
-        croppedImages.map((img) => uploadToCloudinary(img.file))
+      const cropped = await getCroppedImg(
+        selectedImages[currentIndex],
+        croppedAreaPixels
       );
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/posts`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          imageUrls: uploadedUrls,
-          caption,
-        }),
+      setCroppedImages((prev) => {
+        const updated = [...prev];
+        updated[currentIndex] = cropped;
+        return updated;
       });
+    } catch (err) {
+      console.error("❌ Crop error:", err);
+    }
+  };
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error("Post creation failed: " + errorText);
+  const handleCropAndContinue = () => {
+    if (currentIndex < selectedImages.length - 1) {
+      setCurrentIndex((i) => i + 1);
+    } else {
+      if (croppedImages.every(Boolean)) {
+        setStep("review");
+        setCurrentIndex(0);
+      } else {
+        alert("Please crop all images.");
+      }
+    }
+  };
+
+  const handleSubmit = async () => {
+    setUploading(true);
+    try {
+      const imageUrls = [];
+
+      for (const img of croppedImages) {
+        const formData = new FormData();
+        formData.append("file", img.file); // use img.file, not img
+        formData.append(
+          "upload_preset",
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+        );
+
+        const res = await axios.post(
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,
+          formData
+        );
+        imageUrls.push(res.data.secure_url);
       }
 
-      navigate("/");
+      const token = localStorage.getItem("token");
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/posts`,
+        { imageUrls, caption },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      window.location.href = "/";
     } catch (err) {
-      console.error("🚨 Upload error:", err.message);
-      alert("Upload failed: " + err.message);
+      console.error("Post error:", err);
+      alert("Upload failed");
     } finally {
       setUploading(false);
     }
   };
 
   return (
-    <div className="p-4 text-text">
-      <h1 className="text-xl font-bold mb-4">Create Post</h1>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-md mx-auto p-4">
+      {step === "select" && (
         <input
           type="file"
-          accept="image/*"
           multiple
+          accept="image/*"
           onChange={handleImageChange}
         />
+      )}
 
-        <input
-          type="text"
-          placeholder="Caption"
-          className="input input-bordered w-full"
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-        />
+      {step === "crop" && selectedImages.length > 0 && (
+        <>
+          <PostPreview
+            images={selectedImages}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            crop={crop}
+            zoom={zoom}
+            setCrop={setCrop}
+            setZoom={setZoom}
+            onCropComplete={handleCropComplete}
+            mode="crop"
+          />
+          <button
+            className="mt-2 bg-red-600 text-white px-4 py-2 rounded"
+            onClick={handleCropAndContinue}
+          >
+            Crop and Continue
+          </button>
+        </>
+      )}
 
-        {croppedImages.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {croppedImages.map((img) => (
-              <div key={img.id} className="w-full aspect-square bg-black">
-                <img
-                  src={img.preview}
-                  alt="cropped"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            ))}
-          </div>
-        )}
-
-        <button
-          className="btn btn-primary w-full"
-          disabled={uploading || croppedImages.length !== images.length}
-        >
-          {uploading ? "Uploading..." : "Post"}
-        </button>
-      </form>
-
-      {showCropper && images.length > 0 && (
-        <div className="mt-4">
-          <PostPreview images={images} onCropped={handleCropped} />
-        </div>
+      {step === "review" && (
+        <>
+          <PostPreview
+            images={croppedImages.map((img) => img.preview)}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            mode="review"
+          />
+          <textarea
+            className="w-full border rounded p-2 mt-2"
+            placeholder="Write a caption..."
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+          />
+          <button
+            className="mt-4 bg-red-600 text-white px-4 py-2 rounded w-full"
+            onClick={handleSubmit}
+            disabled={uploading}
+          >
+            {uploading ? "Posting..." : "Post"}
+          </button>
+        </>
       )}
     </div>
   );
