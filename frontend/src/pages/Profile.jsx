@@ -58,7 +58,7 @@ export default function Profile() {
       )}
 
       <h2 className="text-xl font-semibold mb-2">My Posts</h2>
-      <PostList posts={posts} />
+      <PostList posts={posts} setPosts={setPosts} />
     </div>
   );
 }

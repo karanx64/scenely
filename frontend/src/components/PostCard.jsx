@@ -1,5 +1,5 @@
 // components/PostCard.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,6 +15,66 @@ export default function PostCard({ post }) {
     const diffX = touch.clientX - startX;
     if (diffX > 50) prev();
     if (diffX < -50) next();
+  };
+
+  //delete logic
+  const token = localStorage.getItem("token");
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  useEffect(() => {
+    try {
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        setCurrentUserId(payload.id);
+      }
+    } catch (err) {
+      console.warn("Invalid token:", err);
+      setCurrentUserId(null);
+    }
+  }, [token]);
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/posts/${post._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      // Delete Cloudinary images
+      await Promise.all(
+        data.imageUrls.map((url) => {
+          const publicId = url.split("/").pop().split(".")[0];
+          return fetch(
+            `${import.meta.env.VITE_API_URL}/upload/cloudinary-delete`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({ publicId }),
+            }
+          );
+        })
+      );
+
+      // Optimistically remove post from UI
+      const event = new CustomEvent("postDeleted", { detail: post._id });
+      window.dispatchEvent(event);
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete post");
+    }
   };
 
   let startX = 0;
@@ -66,48 +126,20 @@ export default function PostCard({ post }) {
           </div>
         )}
       </div>
-
       {/* Caption */}
       <div className="p-4 text-text">
         {post.caption && <p>{post.caption}</p>}
       </div>
 
-      {/* Delete button - only show if user owns the post (optional check) */}
-      <div className="flex justify-end px-4 pb-4">
+      {/* delete button */}
+      {currentUserId === post.userId._id && (
         <button
-          onClick={async () => {
-            const confirm = window.confirm(
-              "Are you sure you want to delete this post?"
-            );
-            if (!confirm) return;
-
-            const token = localStorage.getItem("token");
-            try {
-              const res = await fetch(`${API_URL}/posts/${post._id}`, {
-                method: "DELETE",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              });
-
-              const data = await res.json();
-              if (res.ok) {
-                alert("Post deleted");
-                window.location.reload(); // reload or use state-based removal
-              } else {
-                alert("Failed: " + data.message);
-              }
-            } catch (err) {
-              console.error("Delete error:", err);
-              alert("Error deleting post.");
-            }
-          }}
-          className="text-red-500 hover:text-red-700 flex items-center gap-1"
+          className="mt-2 bg-red-600 text-white py-1 px-2 rounded"
+          onClick={handleDelete}
         >
-          <Trash2 size={16} />
-          Delete
+          Delete Post
         </button>
-      </div>
+      )}
     </div>
   );
 }

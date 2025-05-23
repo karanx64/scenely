@@ -22,7 +22,7 @@ export default function Explore() {
       {loading ? (
         <p>Loading...</p>
       ) : posts.length > 0 ? (
-        <PostList posts={posts} />
+        <PostList posts={posts} setPosts={setPosts} />
       ) : (
         <p>No posts available.</p>
       )}

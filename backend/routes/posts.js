@@ -1,6 +1,7 @@
 import express from "express";
 import Post from "../models/Post.js";
 import verifyToken from "../middleware/auth.js";
+import { cloudinary } from "../utils/cloudinary.js"; // Import cloudinary for image upload
 
 const router = express.Router();
 
@@ -58,21 +59,20 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ✅ Delete post
+// DELETE a post
 router.delete("/:postId", verifyToken, async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    if (post.userId.toString() !== req.user.id) {
+    // Check if user owns the post
+    if (post.userId.toString() !== req.user.id)
       return res.status(403).json({ message: "Unauthorized" });
-    }
 
+    // Delete post from DB
     await Post.findByIdAndDelete(req.params.postId);
-    res.status(200).json({ message: "Post deleted successfully" });
+
+    res.json({ message: "Post deleted", imageUrls: post.imageUrls });
   } catch (err) {
     res
       .status(500)

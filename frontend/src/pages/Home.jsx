@@ -34,7 +34,11 @@ export default function Home() {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Home</h1>
-      {loading ? <p>Loading...</p> : <PostList posts={posts} />}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <PostList posts={posts} setPosts={setPosts} />
+      )}
     </div>
   );
 }
