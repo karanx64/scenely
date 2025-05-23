@@ -14,6 +14,9 @@ export default function UploadForm() {
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState("select");
 
+  const timestamp = Date.now();
+  const uniqueId = `${timestamp}_${Math.floor(Math.random() * 1000)}`;
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const readers = files.map(
@@ -70,11 +73,19 @@ export default function UploadForm() {
 
       for (const img of croppedImages) {
         const formData = new FormData();
-        formData.append("file", img.file); // use img.file, not img
+
+        // formData.append("eager", "square-fit");
+
         formData.append(
           "upload_preset",
           import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
         );
+
+        formData.append("file", img.file); // use img.file, not img
+
+        formData.append("namedTransformation", "square-fit"); //apply cloudinary transformation template (custom)
+
+        formData.append("public_id", `post_${uniqueId}`); // use uniqueId for public_id
 
         const res = await axios.post(
           import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,

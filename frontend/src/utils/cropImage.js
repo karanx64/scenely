@@ -8,7 +8,11 @@ export function createImage(url) {
   });
 }
 
-export default async function getCroppedImage(imageSrc, cropArea) {
+export default async function getCroppedImage(
+  imageSrc,
+  cropArea,
+  customName = null
+) {
   const image = await createImage(imageSrc);
 
   const scaleX = image.naturalWidth / image.width;
@@ -50,7 +54,11 @@ export default async function getCroppedImage(imageSrc, cropArea) {
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (!blob) return reject(new Error("Canvas is empty"));
-      const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+      const filename =
+        customName ||
+        `post_${Date.now()}_${Math.floor(Math.random() * 1000)}.jpg`;
+
+      const file = new File([blob], filename, { type: "image/jpeg" });
       const preview = URL.createObjectURL(blob);
       resolve({ file, preview });
     }, "image/jpeg");
