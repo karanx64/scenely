@@ -1,6 +1,7 @@
 // components/PostCard.jsx
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function PostCard({ post }) {
   const [index, setIndex] = useState(0);
@@ -69,6 +70,43 @@ export default function PostCard({ post }) {
       {/* Caption */}
       <div className="p-4 text-text">
         {post.caption && <p>{post.caption}</p>}
+      </div>
+
+      {/* Delete button - only show if user owns the post (optional check) */}
+      <div className="flex justify-end px-4 pb-4">
+        <button
+          onClick={async () => {
+            const confirm = window.confirm(
+              "Are you sure you want to delete this post?"
+            );
+            if (!confirm) return;
+
+            const token = localStorage.getItem("token");
+            try {
+              const res = await fetch(`${API_URL}/posts/${post._id}`, {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+
+              const data = await res.json();
+              if (res.ok) {
+                alert("Post deleted");
+                window.location.reload(); // reload or use state-based removal
+              } else {
+                alert("Failed: " + data.message);
+              }
+            } catch (err) {
+              console.error("Delete error:", err);
+              alert("Error deleting post.");
+            }
+          }}
+          className="text-red-500 hover:text-red-700 flex items-center gap-1"
+        >
+          <Trash2 size={16} />
+          Delete
+        </button>
       </div>
     </div>
   );
