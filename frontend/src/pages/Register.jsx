@@ -22,9 +22,12 @@ export default function Register() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const [success, setSuccess] = useState(false); // 👈 new state
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSuccess(false);
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
@@ -36,8 +39,11 @@ export default function Register() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to register");
 
-      localStorage.setItem("token", data.token);
-      navigate("/login");
+      // ✅ Show success message and delay redirect
+      setSuccess(true);
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500); // wait 1.5 seconds
     } catch (err) {
       setError(err.message);
     }
@@ -45,6 +51,11 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg text-text">
+      {success && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-700 px-4 py-2 rounded shadow">
+          Registered successfully!
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="p-6 bg-white rounded shadow-md w-80 space-y-4"
