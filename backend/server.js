@@ -10,6 +10,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import postRoutes from "./routes/posts.js";
 import uploadRoutes from "./routes/upload.js";
+import userRoutes from "./routes/user.js";
 
 const app = express();
 app.use(cors());
@@ -47,3 +48,5 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 
 app.use("/api/upload", uploadRoutes);
+
+app.use("/api/users", userRoutes);
