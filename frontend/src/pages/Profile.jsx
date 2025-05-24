@@ -65,6 +65,7 @@
 
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
+import UserAvatar from "../components/UserAvatar"; // add this at the top
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -112,13 +113,7 @@ export default function Profile() {
 
       {user && (
         <div className="mb-6">
-          {user.avatar && (
-            <img
-              src={user.avatar}
-              alt="Avatar"
-              className="w-24 h-24 rounded-full object-cover mb-4"
-            />
-          )}
+          <UserAvatar size={96} clickable={true} showTooltip={false} />
           <p>
             <strong>Username:</strong> {user.username}
           </p>
