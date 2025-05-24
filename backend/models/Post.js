@@ -10,6 +10,10 @@ const PostSchema = new mongoose.Schema(
     },
     imageUrls: [{ type: String, required: true }], // changed from imageUrl
     caption: { type: String },
+    //new features: emoji, likes, views
+    emoji: { type: String, default: "" },
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    views: [{ type: String }],
     tags: [String],
     metadata: { type: Object },
   },

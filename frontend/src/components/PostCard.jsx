@@ -1,11 +1,95 @@
 // components/PostCard.jsx
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
+import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function PostCard({ post }) {
   const [index, setIndex] = useState(0);
   const images = post.imageUrls || [];
+
+  //new feature: like and view
+  const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
+  const [viewsCount, setViewsCount] = useState(post.views?.length || 0);
+  // useEffect(() => {
+
+  //   const timeout = setTimeout(() => {
+  //     // Get viewerId (either user ID or guest ID)
+  //     let viewerId;
+
+  //     const token = localStorage.getItem("token");
+  //     if (token) {
+  //       // Decode token to get userId
+  //       try {
+  //         const payload = JSON.parse(atob(token.split(".")[1]));
+  //         viewerId = payload.id;
+  //       } catch (err) {
+  //         console.error("Invalid token", err);
+  //       }
+  //     }
+
+  //     // Guest ID fallback
+  //     if (!viewerId) {
+  //       viewerId = localStorage.getItem("viewerId");
+  //       if (!viewerId) {
+  //         viewerId = crypto.randomUUID();
+  //         localStorage.setItem("viewerId", viewerId);
+  //       }
+  //     }
+
+  //     axios.post(`${import.meta.env.VITE_API_URL}/posts/${post._id}/view`, {
+  //       viewerId,
+  //     });
+  //   }, 2000); // Wait 2 seconds
+
+  //   return () => clearTimeout(timeout);
+  // }, [post._id]);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      let viewerId;
+
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          viewerId = payload.id;
+        } catch (err) {
+          console.error("Invalid token", err);
+        }
+      }
+
+      if (!viewerId) {
+        viewerId = localStorage.getItem("viewerId");
+        if (!viewerId) {
+          viewerId = crypto.randomUUID();
+          localStorage.setItem("viewerId", viewerId);
+        }
+      }
+
+      axios
+        .post(`${import.meta.env.VITE_API_URL}/posts/${post._id}/view`, {
+          viewerId,
+        })
+        .then((res) => {
+          setViewsCount(res.data.views); // Update local view count
+        })
+        .catch((err) => {
+          console.error("View tracking failed:", err);
+        });
+    }, 2000); // wait 2 seconds
+
+    return () => clearTimeout(timeout);
+  }, [post._id]);
+  const handleLike = () => {
+    axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/posts/${post._id}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then((res) => setLikesCount(res.data.likes))
+      .catch((err) => console.error("Like error:", err));
+  };
 
   const prev = () => setIndex((i) => (i === 0 ? images.length - 1 : i - 1));
   const next = () => setIndex((i) => (i === images.length - 1 ? 0 : i + 1));
@@ -129,6 +213,16 @@ export default function PostCard({ post }) {
       {/* Caption */}
       <div className="p-4 text-text">
         {post.caption && <p>{post.caption}</p>}
+
+        {/* new features: like, emoji, and view */}
+        {post.emoji && <p className="text-2xl mb-2">{post.emoji}</p>}
+
+        <div className="flex justify-between items-center text-sm mt-2">
+          <button onClick={handleLike} className="text-red-600 hover:underline">
+            ❤️ Like ({likesCount})
+          </button>
+          <span className="text-gray-500">{viewsCount} views</span>
+        </div>
       </div>
 
       {/* delete button */}

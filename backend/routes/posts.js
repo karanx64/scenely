@@ -8,12 +8,13 @@ const router = express.Router();
 // Create post
 router.post("/", verifyToken, async (req, res) => {
   try {
-    const { imageUrls, caption, tags, metadata } = req.body;
+    const { imageUrls, caption, tags, metadata, emoji } = req.body;
 
     const newPost = new Post({
       userId: req.user.id,
       imageUrls,
       caption,
+      emoji, //new feature
       tags,
       metadata,
     });
@@ -77,6 +78,43 @@ router.delete("/:postId", verifyToken, async (req, res) => {
     res
       .status(500)
       .json({ message: "Failed to delete post", error: err.message });
+  }
+});
+//new features: like
+router.post("/:postId/like", verifyToken, async (req, res) => {
+  const post = await Post.findById(req.params.postId);
+  if (!post) return res.status(404).json({ message: "Post not found" });
+
+  const liked = post.likes.includes(req.user.id);
+  if (liked) {
+    post.likes.pull(req.user.id);
+  } else {
+    post.likes.push(req.user.id);
+  }
+
+  await post.save();
+  res.json({ likes: post.likes.length });
+});
+
+// and views
+
+// POST /api/posts/:postId/view
+router.post("/:postId/view", async (req, res) => {
+  const { viewerId } = req.body;
+
+  try {
+    const post = await Post.findById(req.params.postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    // Ensure `views` is an array of unique strings
+    if (!post.views.includes(viewerId)) {
+      post.views.push(viewerId);
+      await post.save();
+    }
+
+    res.json({ views: post.views.length });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to track view" });
   }
 });
 

@@ -13,6 +13,7 @@ export default function UploadForm() {
   const [caption, setCaption] = useState("");
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState("select");
+  const [emoji, setEmoji] = useState("😐"); //new feature emoji
 
   const timestamp = Date.now();
   const uniqueId = `${timestamp}_${Math.floor(Math.random() * 1000)}`;
@@ -94,7 +95,7 @@ export default function UploadForm() {
 
       await axios.post(
         `${import.meta.env.VITE_API_URL}/posts`,
-        { imageUrls, caption },
+        { imageUrls, caption, emoji }, // new feature emoji
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -142,6 +143,18 @@ export default function UploadForm() {
 
       {step === "review" && (
         <>
+          {/* new feature: emoji: <select> */}
+          <select
+            value={emoji}
+            onChange={(e) => setEmoji(e.target.value)}
+            className="input input-bordered w-full"
+          >
+            <option value="🙂">🙂 Happy</option>
+            <option value="😢">😢 Sad</option>
+            <option value="😡">😡 Angry</option>
+            <option value="😍">😍 Love</option>
+            <option value="😐">😐 Neutral</option>
+          </select>
           <PostPreview
             images={croppedImages.map((img) => img.preview)}
             currentIndex={currentIndex}
