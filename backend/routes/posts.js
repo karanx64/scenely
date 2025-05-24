@@ -1,7 +1,7 @@
 import express from "express";
 import Post from "../models/Post.js";
 import verifyToken from "../middleware/auth.js";
-import { cloudinary } from "../utils/cloudinary.js"; // Import cloudinary for image upload
+// import { cloudinary } from "../utils/cloudinary.js"; // Import cloudinary for image upload
 
 const router = express.Router();
 
