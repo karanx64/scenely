@@ -34,5 +34,30 @@ router.delete("/me", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Failed to delete account" });
   }
 });
+// avatar
+router.put("/avatar", verifyToken, async (req, res) => {
+  const { avatarUrl } = req.body;
+  if (!avatarUrl) {
+    return res.status(400).json({ message: "Missing avatar URL" });
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        avatar: avatarUrl,
+        hasAvatar: true,
+      },
+      { new: true }
+    );
+    res.json({
+      message: "Avatar updated",
+      avatar: user.avatar,
+      hasAvatar: user.hasAvatar,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update avatar" });
+  }
+});
 
 export default router;

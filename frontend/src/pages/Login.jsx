@@ -34,7 +34,16 @@ export default function Login() {
       if (!res.ok) throw new Error(data.message || "Login failed");
 
       localStorage.setItem("token", data.token);
-      navigate("/");
+      localStorage.setItem("hasAvatar", data.user.hasAvatar);
+
+      // navigate("/");
+
+      // avatar logic
+      if (!data.user.hasAvatar) {
+        navigate("/select-avatar");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError(err.message);
     }

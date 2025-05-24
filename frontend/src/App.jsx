@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SelectAvatar from "./pages/SelectAvatar";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/upload" element={<Upload />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/select-avatar" element={<SelectAvatar />} />
       </Route>
     </Routes>
   );

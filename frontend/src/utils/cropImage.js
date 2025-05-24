@@ -55,8 +55,7 @@ export default async function getCroppedImage(
     canvas.toBlob((blob) => {
       if (!blob) return reject(new Error("Canvas is empty"));
       const filename =
-        customName ||
-        `post_${Date.now()}_${Math.floor(Math.random() * 1000)}.jpg`;
+        customName || `${Date.now()}_${Math.floor(Math.random() * 1000)}.jpg`;
 
       const file = new File([blob], filename, { type: "image/jpeg" });
       const preview = URL.createObjectURL(blob);

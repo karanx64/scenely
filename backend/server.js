@@ -12,6 +12,7 @@ import postRoutes from "./routes/posts.js";
 import uploadRoutes from "./routes/upload.js";
 import userRoutes from "./routes/user.js";
 
+
 const app = express();
 app.use(cors());
 app.use(express.json());
