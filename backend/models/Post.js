@@ -16,6 +16,11 @@ const PostSchema = new mongoose.Schema(
     views: [{ type: String }],
     tags: [String],
     metadata: { type: Object },
+    media: {
+      title: { type: String },
+      type: { type: String }, // e.g., 'movie' or 'tv'
+      tmdbId: { type: String }, // optional
+    },
   },
   { timestamps: true }
 );

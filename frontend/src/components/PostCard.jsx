@@ -212,6 +212,14 @@ export default function PostCard({ post }) {
       </div>
       {/* Caption */}
       <div className="p-4 text-text">
+
+        
+        {post.media?.title && (
+          <p className="text-sm text-gray-500">
+            📽️ {post.media.title} ({post.media.type})
+          </p>
+        )}
+
         {post.caption && <p>{post.caption}</p>}
 
         {/* new features: like, emoji, and view */}

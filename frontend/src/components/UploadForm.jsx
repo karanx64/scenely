@@ -15,8 +15,46 @@ export default function UploadForm() {
   const [step, setStep] = useState("select");
   const [emoji, setEmoji] = useState("😐"); //new feature emoji
 
+  const [mediaResults, setMediaResults] = useState([]);
+
+  const [media, setMedia] = useState({
+    title: "",
+    tmdbId: "",
+    type: "", // "movie" or "tv"
+  });
+
   const timestamp = Date.now();
   const uniqueId = `${timestamp}_${Math.floor(Math.random() * 1000)}`;
+
+  const handleMediaSearch = async (title) => {
+    setMedia((prev) => ({ ...prev, title }));
+    if (title.length < 2) return;
+
+    try {
+      const res = await axios.get(`https://api.themoviedb.org/3/search/multi`, {
+        params: {
+          query: title,
+          include_adult: false,
+          language: "en-US",
+          page: 1,
+        },
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_TMDB_BEARER_TOKEN}`,
+        },
+      });
+
+      const results = res.data.results
+        .filter(
+          (item) => item.media_type === "movie" || item.media_type === "tv"
+        )
+        .slice(0, 5);
+
+      setMediaResults(results);
+    } catch (err) {
+      console.error("TMDB search error:", err);
+    }
+  };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -95,7 +133,7 @@ export default function UploadForm() {
 
       await axios.post(
         `${import.meta.env.VITE_API_URL}/posts`,
-        { imageUrls, caption, emoji }, // new feature emoji
+        { imageUrls, caption, emoji, media }, // new feature emoji
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -143,6 +181,46 @@ export default function UploadForm() {
 
       {step === "review" && (
         <>
+          <PostPreview
+            images={croppedImages.map((img) => img.preview)}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            mode="review"
+          />
+          <input
+            type="text"
+            value={media.title}
+            onChange={(e) => handleMediaSearch(e.target.value)}
+            placeholder="Enter movie or series name"
+            className="input input-bordered w-full"
+          />
+          {mediaResults.length > 0 && (
+            <ul className="bg-white border mt-1 max-h-40 overflow-y-auto rounded shadow">
+              {mediaResults.map((item) => (
+                <li
+                  key={item.id}
+                  className="p-2 cursor-pointer hover:bg-gray-100"
+                  onClick={() => {
+                    setMedia({
+                      title: item.title || item.name,
+                      tmdbId: item.id,
+                      type: item.media_type,
+                    });
+                    setMediaResults([]);
+                  }}
+                >
+                  {item.title || item.name} ({item.media_type})
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <textarea
+            className="w-full border rounded p-2 mt-2"
+            placeholder="Write a caption..."
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+          />
           {/* new feature: emoji: <select> */}
           <select
             value={emoji}
@@ -155,18 +233,7 @@ export default function UploadForm() {
             <option value="😍">😍 Love</option>
             <option value="😐">😐 Neutral</option>
           </select>
-          <PostPreview
-            images={croppedImages.map((img) => img.preview)}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            mode="review"
-          />
-          <textarea
-            className="w-full border rounded p-2 mt-2"
-            placeholder="Write a caption..."
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-          />
+
           <button
             className="mt-4 bg-red-600 text-white px-4 py-2 rounded w-full"
             onClick={handleSubmit}

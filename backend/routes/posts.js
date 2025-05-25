@@ -8,7 +8,7 @@ const router = express.Router();
 // Create post
 router.post("/", verifyToken, async (req, res) => {
   try {
-    const { imageUrls, caption, tags, metadata, emoji } = req.body;
+    const { imageUrls, caption, tags, metadata, emoji, media } = req.body;
 
     const newPost = new Post({
       userId: req.user.id,
@@ -17,7 +17,10 @@ router.post("/", verifyToken, async (req, res) => {
       emoji, //new feature
       tags,
       metadata,
+      media,
     });
+
+    
 
     const saved = await newPost.save();
     res.status(201).json(saved);
