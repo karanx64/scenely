@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 const API_URL = import.meta.env.VITE_API_URL;
+import SearchUsers from "../components/SearchUsers";
 
 export default function Explore() {
   const [posts, setPosts] = useState([]);
@@ -18,6 +19,7 @@ export default function Explore() {
   return (
     <div className="p-4">
       <h1 className="text-xl font-semibold mb-4">Explore</h1>
+      <SearchUsers />
 
       {loading ? (
         <p>Loading...</p>
