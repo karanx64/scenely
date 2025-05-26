@@ -74,7 +74,7 @@ export default function SearchUsers() {
             {results.map((user) => (
               <li
                 key={user._id}
-                onClick={() => navigate(`/profile/${user._id}`)}
+                onClick={() => navigate(`/user/${user._id}`)}
                 className="flex items-center gap-3 p-2 rounded hover:bg-gray-100 cursor-pointer"
               >
                 {user.avatar ? (

@@ -32,7 +32,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/select-avatar" element={<SelectAvatar />} />
-        <Route path="/profile/:userId" element={<UserProfile />} />
+        <Route path="/user/:userId" element={<UserProfile />} />
       </Route>
     </Routes>
   );
