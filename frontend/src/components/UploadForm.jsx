@@ -3,6 +3,7 @@ import { useState } from "react";
 import PostPreview from "./PostPreview";
 import getCroppedImg from "../utils/cropImage";
 import axios from "axios";
+import MovieSearch from "./MovieSearch";
 
 export default function UploadForm() {
   const [selectedImages, setSelectedImages] = useState([]);
@@ -15,46 +16,52 @@ export default function UploadForm() {
   const [step, setStep] = useState("select");
   const [emoji, setEmoji] = useState("😐"); //new feature emoji
 
-  const [mediaResults, setMediaResults] = useState([]);
+  // const [mediaResults, setMediaResults] = useState([]);
+
+  // const [media, setMedia] = useState({
+  //   title: "",
+  //   tmdbId: "",
+  //   type: "", // "movie" or "tv"
+  // });
 
   const [media, setMedia] = useState({
     title: "",
     tmdbId: "",
-    type: "", // "movie" or "tv"
+    type: "",
   });
 
   const timestamp = Date.now();
   const uniqueId = `${timestamp}_${Math.floor(Math.random() * 1000)}`;
 
-  const handleMediaSearch = async (title) => {
-    setMedia((prev) => ({ ...prev, title }));
-    if (title.length < 2) return;
+  // const handleMediaSearch = async (title) => {
+  //   setMedia((prev) => ({ ...prev, title }));
+  //   if (title.length < 2) return;
 
-    try {
-      const res = await axios.get(`https://api.themoviedb.org/3/search/multi`, {
-        params: {
-          query: title,
-          include_adult: false,
-          language: "en-US",
-          page: 1,
-        },
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_TMDB_BEARER_TOKEN}`,
-        },
-      });
+  //   try {
+  //     const res = await axios.get(`https://api.themoviedb.org/3/search/multi`, {
+  //       params: {
+  //         query: title,
+  //         include_adult: false,
+  //         language: "en-US",
+  //         page: 1,
+  //       },
+  //       headers: {
+  //         accept: "application/json",
+  //         Authorization: `Bearer ${import.meta.env.VITE_TMDB_BEARER_TOKEN}`,
+  //       },
+  //     });
 
-      const results = res.data.results
-        .filter(
-          (item) => item.media_type === "movie" || item.media_type === "tv"
-        )
-        .slice(0, 5);
+  //     const results = res.data.results
+  //       .filter(
+  //         (item) => item.media_type === "movie" || item.media_type === "tv"
+  //       )
+  //       .slice(0, 5);
 
-      setMediaResults(results);
-    } catch (err) {
-      console.error("TMDB search error:", err);
-    }
-  };
+  //     setMediaResults(results);
+  //   } catch (err) {
+  //     console.error("TMDB search error:", err);
+  //   }
+  // };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -187,7 +194,8 @@ export default function UploadForm() {
             setCurrentIndex={setCurrentIndex}
             mode="review"
           />
-          <input
+
+          {/* <input
             type="text"
             value={media.title}
             onChange={(e) => handleMediaSearch(e.target.value)}
@@ -213,7 +221,9 @@ export default function UploadForm() {
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
+
+          <MovieSearch media={media} setMedia={setMedia} />
 
           <textarea
             className="w-full border rounded p-2 mt-2"
