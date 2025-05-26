@@ -66,11 +66,17 @@
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 import UserAvatar from "../components/UserAvatar"; // add this at the top
+import FollowersModal from "../components/FollowersModal";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
+
+  const [followersCount, setFollowersCount] = useState(0); // Add state for followers count
+  const [followingCount, setFollowingCount] = useState(0); // Add state for following count
+
+  const [showModal, setShowModal] = useState(null); // State for showing followers/following modal
 
   const token = localStorage.getItem("token");
 
@@ -88,6 +94,10 @@ export default function Profile() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch user");
         setUser(data);
+
+        // Extract and set the counts
+        setFollowersCount(data.followers ? data.followers.length : 0);
+        setFollowingCount(data.following ? data.following.length : 0);
 
         if (data._id) {
           const postRes = await fetch(
@@ -120,6 +130,30 @@ export default function Profile() {
           <p>
             <strong>Email:</strong> {user.email}
           </p>
+
+          {/* Display Followers Count */}
+          <p
+            className="cursor-pointer"
+            onClick={() => setShowModal("followers")}
+          >
+            <strong>Followers:</strong> {followersCount}
+          </p>
+          {/* Display Following Count */}
+          <p
+            className="cursor-pointer"
+            onClick={() => setShowModal("following")}
+          >
+            <strong>Following:</strong> {followingCount}
+          </p>
+
+          {showModal &&
+            user?._id && ( // Ensure user._id is available before rendering modal
+              <FollowersModal
+                userId={user._id} // Pass the current user's ID to the modal
+                type={showModal}
+                onClose={() => setShowModal(null)}
+              />
+            )}
         </div>
       )}
 
