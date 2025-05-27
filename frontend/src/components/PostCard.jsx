@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import axios from "axios";
+import SharePostModal from "./SharePostModal";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function PostCard({ post }) {
@@ -11,6 +13,9 @@ export default function PostCard({ post }) {
   //new feature: like and view
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
   const [viewsCount, setViewsCount] = useState(post.views?.length || 0);
+
+  const [showShareModal, setShowShareModal] = useState(false);
+
   // useEffect(() => {
 
   //   const timeout = setTimeout(() => {
@@ -212,8 +217,6 @@ export default function PostCard({ post }) {
       </div>
       {/* Caption */}
       <div className="p-4 text-text">
-
-        
         {post.media?.title && (
           <p className="text-sm text-gray-500">
             📽️ {post.media.title} ({post.media.type})
@@ -241,6 +244,21 @@ export default function PostCard({ post }) {
         >
           Delete Post
         </button>
+      )}
+      <div className="flex gap-4 mt-2">
+        {/* Like, comment, etc. buttons */}
+        <button
+          onClick={() => setShowShareModal(true)}
+          className="text-sm text-blue-500 hover:underline"
+        >
+          Share
+        </button>
+      </div>
+      {showShareModal && (
+        <SharePostModal
+          postId={post._id}
+          onClose={() => setShowShareModal(false)}
+        />
       )}
     </div>
   );

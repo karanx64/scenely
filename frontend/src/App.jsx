@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SelectAvatar from "./pages/SelectAvatar";
 import UserProfile from "./pages/UserProfile";
+import Messages from "./pages/Messages";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/select-avatar" element={<SelectAvatar />} />
         <Route path="/user/:userId" element={<UserProfile />} />
+        <Route path="/messages" element={<Messages />} />
       </Route>
     </Routes>
   );

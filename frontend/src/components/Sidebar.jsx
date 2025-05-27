@@ -1,5 +1,13 @@
 // src/components/Sidebar.jsx
-import { Home, Upload, Compass, User, Settings, LogOut } from "lucide-react";
+import {
+  Home,
+  Upload,
+  Compass,
+  User,
+  Settings,
+  LogOut,
+  MessageCircle,
+} from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 const navItems = [
@@ -8,6 +16,7 @@ const navItems = [
   { to: "/upload", icon: <Upload size={20} />, label: "Upload" },
   { to: "/profile", icon: <User size={20} />, label: "Profile" },
   { to: "/settings", icon: <Settings size={20} />, label: "Settings" },
+  { to: "/messages", icon: <MessageCircle size={20} />, label: "Messages" },
 ];
 
 export default function Sidebar() {

@@ -11,7 +11,7 @@ import authRoutes from "./routes/auth.js";
 import postRoutes from "./routes/posts.js";
 import uploadRoutes from "./routes/upload.js";
 import userRoutes from "./routes/user.js";
-
+import messageRoutes from "./routes/message.js";
 
 const app = express();
 app.use(cors());
@@ -36,12 +36,6 @@ app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
 });
 
-console.log("ENV check:", {
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
 // Routes
 
 app.use("/api/auth", authRoutes);
@@ -51,3 +45,5 @@ app.use("/api/posts", postRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.use("/api/users", userRoutes);
+
+app.use("/api/messages", messageRoutes);
