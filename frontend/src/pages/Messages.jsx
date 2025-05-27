@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import ConversationList from "../components/Messages/ConversationList";
 import MessageThread from "../components/Messages/MessageThread";
-import { useEffect } from "react";
 
 export default function Messages() {
   const [recipientId, setRecipientId] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const getMe = async () => {
@@ -17,6 +18,12 @@ export default function Messages() {
     };
     getMe();
   }, []);
+
+  // Auto-select recipient from query param
+  useEffect(() => {
+    const userParam = searchParams.get("user");
+    if (userParam) setRecipientId(userParam);
+  }, [searchParams]);
 
   return (
     <div className="flex">

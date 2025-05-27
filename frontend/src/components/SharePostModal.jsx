@@ -6,7 +6,6 @@ export default function SharePostModal({ postId, onClose }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [message, setMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -35,7 +34,6 @@ export default function SharePostModal({ postId, onClose }) {
     const body = {
       recipientId: selectedUser._id,
       postId,
-      message,
     };
 
     try {
@@ -103,14 +101,6 @@ export default function SharePostModal({ postId, onClose }) {
           <span>{selectedUser.username}</span>
         </div>
       )}
-
-      <textarea
-        rows={3}
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Add a message (optional)"
-        className="w-full p-2 border rounded mb-2"
-      />
 
       <button
         onClick={handleShare}

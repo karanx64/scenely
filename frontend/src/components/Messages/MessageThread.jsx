@@ -59,6 +59,9 @@ export default function MessageThread({ currentUserId, recipientId }) {
           value={text}
           onChange={(e) => setText(e.target.value)}
           className="border p-1 w-full"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") sendMessage();
+          }}
         />
         <button onClick={sendMessage} className="btn">
           Send

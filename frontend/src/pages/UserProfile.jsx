@@ -207,14 +207,26 @@ export default function UserProfile() {
 
           {/* ✅ Show follow/unfollow button (not on your own profile) */}
           {currentUserId && currentUserId !== user._id && (
-            <button
-              onClick={handleFollowToggle}
-              className={`mt-2 px-4 py-2 rounded ${
-                isFollowing ? "bg-red-500 text-white" : "bg-blue-500 text-white"
-              }`}
-            >
-              {isFollowing ? "Unfollow" : "Follow"}
-            </button>
+            <>
+              <button
+                onClick={handleFollowToggle}
+                className={`mt-2 px-4 py-2 rounded ${
+                  isFollowing
+                    ? "bg-red-500 text-white"
+                    : "bg-blue-500 text-white"
+                }`}
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </button>
+              <button
+                onClick={() =>
+                  (window.location.href = `/messages?user=${user._id}`)
+                }
+                className="mt-2 ml-2 px-4 py-2 rounded bg-green-500 text-white"
+              >
+                Message
+              </button>
+            </>
           )}
         </div>
       )}
