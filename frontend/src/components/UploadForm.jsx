@@ -268,7 +268,7 @@ export default function UploadForm() {
   const [croppedImages, setCroppedImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [crop, setCrop] = useState({
-    aspect: 1,
+    // aspect: 1,
     unit: "%",
     width: 80,
     height: 80,
@@ -414,7 +414,7 @@ export default function UploadForm() {
           import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
         );
         formData.append("file", img.file);
-        formData.append("namedTransformation", "square-fit");
+        // formData.append("namedTransformation", "square-fit");
         formData.append("public_id", `post_${uniqueId}_${i}`);
 
         const res = await axios.post(

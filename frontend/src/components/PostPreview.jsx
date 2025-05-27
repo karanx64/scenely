@@ -75,7 +75,6 @@
 //   );
 // }
 
-
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -94,18 +93,21 @@ export default function PostPreview({
 
   const prev = () =>
     setCurrentIndex((i) => (i === 0 ? images.length - 1 : i - 1));
-    
+
   const next = () =>
     setCurrentIndex((i) => (i === images.length - 1 ? 0 : i + 1));
 
   const imageSrc = images[currentIndex];
 
   return (
-    <div className="relative bg-black" style={{ width: "100%", minHeight: 400 }}>
+    <div
+      className="relative bg-black"
+      style={{ width: "100%", minHeight: 400 }}
+    >
       {mode === "crop" ? (
         <div className="h-full flex items-center justify-center">
           {imageSrc && (
-            <div style={{ maxWidth: '100%', maxHeight: '400px' }}>
+            <div style={{ maxWidth: "100%", maxHeight: "400px" }}>
               <ReactCrop
                 crop={crop}
                 onChange={(c) => {
@@ -116,16 +118,19 @@ export default function PostPreview({
                   console.log("Crop complete in PostPreview:", c);
                   onCropComplete(c);
                 }}
-                aspect={1}
+                // aspect={1}
                 circularCrop={false}
                 ruleOfThirds
               >
                 <img
                   src={imageSrc}
                   alt="Crop preview"
-                  style={{ maxWidth: '100%', maxHeight: '400px' }}
+                  style={{ maxWidth: "100%", maxHeight: "400px" }}
                   onLoad={(e) => {
-                    console.log("Image loaded in PostPreview:", e.currentTarget);
+                    console.log(
+                      "Image loaded in PostPreview:",
+                      e.currentTarget
+                    );
                     onImageLoaded(e.currentTarget);
                   }}
                 />
