@@ -1,10 +1,14 @@
-// MessageThread.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import PostCard from "../PostCard"; // if you want to show shared posts
 
 export default function MessageThread({ currentUserId, recipientId }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView();
+  };
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -21,6 +25,10 @@ export default function MessageThread({ currentUserId, recipientId }) {
     };
     fetchMessages();
   }, [recipientId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const sendMessage = async () => {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
@@ -55,6 +63,7 @@ export default function MessageThread({ currentUserId, recipientId }) {
             {msg.post && <PostCard post={msg.post} />}
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="flex gap-2 mt-2">
