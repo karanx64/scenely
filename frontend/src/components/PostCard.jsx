@@ -169,39 +169,35 @@ export default function PostCard({ post }) {
   let startX = 0;
 
   return (
-    <div className="bg-white rounded shadow mb-6 overflow-hidden w-3xs">
-      {/* Image container with aspect ratio */}
+    <div className="card w-80 bg-base-100 shadow-md mb-6">
       <div
-        className="relative aspect-square bg-black overflow-hidden"
+        className="relative aspect-square bg-black"
         onTouchStart={(e) => (startX = e.touches[0].clientX)}
         onTouchEnd={handleSwipe}
       >
-        {/* Image */}
         <img
           src={images[index]}
           alt={`Post ${index}`}
           className="object-contain h-full w-full"
         />
 
-        {/* Arrows */}
         {images.length > 1 && (
           <>
             <button
               onClick={prev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
+              className="btn btn-sm btn-circle absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={20} />
             </button>
             <button
               onClick={next}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
+              className="btn btn-sm btn-circle absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={20} />
             </button>
           </>
         )}
 
-        {/* Dot indicators */}
         {images.length > 1 && (
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
             {images.map((_, i) => (
@@ -215,51 +211,47 @@ export default function PostCard({ post }) {
           </div>
         )}
       </div>
-      {/* Caption */}
-      <div className="p-4 text-text">
+
+      <div className="card-body p-4">
         {post.media?.title && (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-base-content/60">
             📽️ {post.media.title} ({post.media.type})
           </p>
         )}
 
         {post.caption && <p>{post.caption}</p>}
 
-        {/* new features: like, emoji, and view */}
-        {post.emoji && <p className="text-2xl mb-2">{post.emoji}</p>}
+        {post.emoji && <p className="text-2xl">{post.emoji}</p>}
 
         <div className="flex justify-between items-center text-sm mt-2">
-          <button onClick={handleLike} className="text-red-600 hover:underline">
+          <button onClick={handleLike} className="text-error hover:underline">
             ❤️ Like ({likesCount})
           </button>
-          <span className="text-gray-500">{viewsCount} views</span>
+          <span className="text-base-content/60">{viewsCount} views</span>
         </div>
-      </div>
 
-      {/* delete button */}
-      {currentUserId === post.userId._id && (
-        <button
-          className="mt-2 bg-red-600 text-white py-1 px-2 rounded"
-          onClick={handleDelete}
-        >
-          Delete Post
-        </button>
-      )}
-      <div className="flex gap-4 mt-2">
-        {/* Like, comment, etc. buttons */}
-        <button
-          onClick={() => setShowShareModal(true)}
-          className="text-sm text-blue-500 hover:underline"
-        >
-          Share
-        </button>
+        {currentUserId === post.userId._id && (
+          <button className="btn btn-error btn-sm mt-2" onClick={handleDelete}>
+            Delete Post
+          </button>
+        )}
+
+        <div className="flex gap-4 mt-2">
+          <button
+            onClick={() => setShowShareModal(true)}
+            className="btn btn-outline btn-primary btn-sm"
+          >
+            Share
+          </button>
+        </div>
+
+        {showShareModal && (
+          <SharePostModal
+            postId={post._id}
+            onClose={() => setShowShareModal(false)}
+          />
+        )}
       </div>
-      {showShareModal && (
-        <SharePostModal
-          postId={post._id}
-          onClose={() => setShowShareModal(false)}
-        />
-      )}
     </div>
   );
 }

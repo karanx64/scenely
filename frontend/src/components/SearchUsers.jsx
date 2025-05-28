@@ -43,30 +43,27 @@ export default function SearchUsers() {
   };
 
   return (
-    <div className="p-4 bg-white rounded shadow-md w-full max-w-md mx-auto">
+    <div className="p-4  rounded  w-full max-w-md mx-auto">
       <form onSubmit={handleSearch} className="flex gap-2 mb-4">
         <input
           type="text"
           placeholder="Search users by name..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded"
+          className="input input-bordered flex-1"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button
-          type="submit"
-          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark"
-        >
+        <button type="submit" className="btn btn-primary">
           Search
         </button>
       </form>
 
-      {error && <p className="text-red-500 mb-2">{error}</p>}
+      {error && <p className="text-error mb-2">{error}</p>}
 
       {results.length > 0 && (
         <div className="mb-4">
           <button
             onClick={clearResults}
-            className="mt-4 text-sm text-blue-600 hover:underline"
+            className="text-sm text-blue-600 hover:underline mb-2"
           >
             Clear Results
           </button>
@@ -75,7 +72,7 @@ export default function SearchUsers() {
               <li
                 key={user._id}
                 onClick={() => navigate(`/user/${user._id}`)}
-                className="flex items-center gap-3 p-2 rounded hover:bg-gray-100 cursor-pointer"
+                className="flex items-center gap-3 p-2 rounded hover:bg-base-200 cursor-pointer"
               >
                 {user.avatar ? (
                   <img

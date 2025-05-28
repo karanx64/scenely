@@ -116,44 +116,41 @@ export default function Profile() {
   }, [token]);
 
   return (
-    <div className="p-4 text-text">
+    <div className="p-4 text-base-content">
       <h1 className="text-2xl font-bold mb-4">My Profile</h1>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-error">{error}</p>}
 
       {user && (
-        <div className="mb-6">
+        <div className="mb-6 space-y-3">
           <UserAvatar size={96} clickable={true} showTooltip={false} />
           <p>
-            <strong>Username:</strong> {user.username}
+            <span className="font-semibold">Username:</span> {user.username}
           </p>
           <p>
-            <strong>Email:</strong> {user.email}
+            <span className="font-semibold">Email:</span> {user.email}
           </p>
 
-          {/* Display Followers Count */}
           <p
-            className="cursor-pointer"
+            className="cursor-pointer text-primary hover:underline"
             onClick={() => setShowModal("followers")}
           >
-            <strong>Followers:</strong> {followersCount}
+            <span className="font-semibold">Followers:</span> {followersCount}
           </p>
-          {/* Display Following Count */}
           <p
-            className="cursor-pointer"
+            className="cursor-pointer text-primary hover:underline"
             onClick={() => setShowModal("following")}
           >
-            <strong>Following:</strong> {followingCount}
+            <span className="font-semibold">Following:</span> {followingCount}
           </p>
 
-          {showModal &&
-            user?._id && ( // Ensure user._id is available before rendering modal
-              <FollowersModal
-                userId={user._id} // Pass the current user's ID to the modal
-                type={showModal}
-                onClose={() => setShowModal(null)}
-              />
-            )}
+          {showModal && user?._id && (
+            <FollowersModal
+              userId={user._id}
+              type={showModal}
+              onClose={() => setShowModal(null)}
+            />
+          )}
         </div>
       )}
 

@@ -41,7 +41,7 @@ const MovieSearch = ({ media, setMedia }) => {
   };
 
   return (
-    <div>
+    <div className="space-y-2">
       <input
         type="text"
         value={media.title}
@@ -49,15 +49,15 @@ const MovieSearch = ({ media, setMedia }) => {
         placeholder="Enter movie or series name"
         className="input input-bordered w-full"
       />
-      <button onClick={clearResults} className="m-5 bg-red-500 rounded-sm">
-        clear
+      <button onClick={clearResults} className="btn btn-error btn-sm">
+        Clear
       </button>
       {mediaResults.length > 0 && (
-        <ul className="bg-white border mt-1 max-h-40 overflow-y-auto rounded shadow">
+        <ul className="bg-base-100 border border-base-300 rounded-lg shadow max-h-40 overflow-y-auto">
           {mediaResults.map((item) => (
             <li
               key={item.id}
-              className="p-2 cursor-pointer hover:bg-gray-100"
+              className="px-3 py-2 cursor-pointer hover:bg-base-200"
               onClick={() => {
                 setMedia({
                   title: item.title || item.name,
@@ -67,7 +67,8 @@ const MovieSearch = ({ media, setMedia }) => {
                 setMediaResults([]);
               }}
             >
-              {item.title || item.name} ({item.media_type})
+              {item.title || item.name}{" "}
+              <span className="text-sm opacity-70">({item.media_type})</span>
             </li>
           ))}
         </ul>

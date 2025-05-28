@@ -33,9 +33,9 @@ export default function Home() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Home</h1>
+      <h1 className="text-2xl font-bold text-base-content mb-4">Home</h1>
       {loading ? (
-        <p>Loading...</p>
+        <div className="text-base-content/70 text-center py-4">Loading...</div>
       ) : (
         <PostList posts={posts} setPosts={setPosts} />
       )}

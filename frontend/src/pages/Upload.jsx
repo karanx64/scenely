@@ -234,8 +234,10 @@ import UploadForm from "../components/UploadForm";
 const UploadPage = () => {
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Upload Post</h1>
-      <UploadForm />
+      <h1 className="text-xl font-bold mb-4 text-base-content">Upload Post</h1>
+      <div className="bg-base-100 p-4 rounded-lg shadow-md">
+        <UploadForm />
+      </div>
     </div>
   );
 };

@@ -58,18 +58,20 @@ export default function SharePostModal({ postId, onClose }) {
 
   return (
     <Modal onClose={onClose}>
-      <h2 className="text-lg font-semibold mb-2">Share Post</h2>
+      <h2 className="text-lg font-semibold mb-3 text-base-content">
+        Share Post
+      </h2>
 
       <input
         type="text"
         placeholder="Search for a user..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full p-2 border rounded mb-2"
+        className="w-full input input-bordered mb-3"
       />
 
       {results.length > 0 && (
-        <ul className="max-h-40 overflow-y-auto mb-2">
+        <ul className="max-h-40 overflow-y-auto mb-3 space-y-2">
           {results.map((user) => (
             <li
               key={user._id}
@@ -78,33 +80,33 @@ export default function SharePostModal({ postId, onClose }) {
                 setSearchQuery("");
                 setResults([]);
               }}
-              className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
+              className="flex items-center gap-3 p-2 rounded-lg hover:bg-base-200 cursor-pointer"
             >
               <img
                 src={user.avatar}
                 alt={user.username}
-                className="w-8 h-8 rounded-full"
+                className="w-8 h-8 rounded-full object-cover"
               />
-              <span>{user.username}</span>
+              <span className="text-base-content">{user.username}</span>
             </li>
           ))}
         </ul>
       )}
 
       {selectedUser && (
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-3 mb-4">
           <img
             src={selectedUser.avatar}
             alt={selectedUser.username}
-            className="w-8 h-8 rounded-full"
+            className="w-8 h-8 rounded-full object-cover"
           />
-          <span>{selectedUser.username}</span>
+          <span className="text-base-content">{selectedUser.username}</span>
         </div>
       )}
 
       <button
         onClick={handleShare}
-        className="bg-primary text-white px-4 py-2 rounded"
+        className="btn btn-primary w-full"
         disabled={!selectedUser}
       >
         Share

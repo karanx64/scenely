@@ -100,14 +100,11 @@ export default function PostPreview({
   const imageSrc = images[currentIndex];
 
   return (
-    <div
-      className="relative bg-black"
-      style={{ width: "100%", minHeight: 400 }}
-    >
+    <div className="relative bg-black w-full min-h-[400px]">
       {mode === "crop" ? (
         <div className="h-full flex items-center justify-center">
           {imageSrc && (
-            <div style={{ maxWidth: "100%", maxHeight: "400px" }}>
+            <div className="max-w-full max-h-[400px]">
               <ReactCrop
                 crop={crop}
                 onChange={(c) => {
@@ -118,14 +115,13 @@ export default function PostPreview({
                   console.log("Crop complete in PostPreview:", c);
                   onCropComplete(c);
                 }}
-                // aspect={1}
                 circularCrop={false}
                 ruleOfThirds
               >
                 <img
                   src={imageSrc}
                   alt="Crop preview"
-                  style={{ maxWidth: "100%", maxHeight: "400px" }}
+                  className="max-w-full max-h-[400px]"
                   onLoad={(e) => {
                     console.log(
                       "Image loaded in PostPreview:",
@@ -150,15 +146,15 @@ export default function PostPreview({
         <>
           <button
             onClick={prev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
+            className="btn btn-sm btn-circle absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white"
           >
-            <ChevronLeft size={24} />
+            <ChevronLeft size={20} />
           </button>
           <button
             onClick={next}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-1 rounded-full"
+            className="btn btn-sm btn-circle absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white"
           >
-            <ChevronRight size={24} />
+            <ChevronRight size={20} />
           </button>
         </>
       )}

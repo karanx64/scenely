@@ -114,7 +114,7 @@ export default function UserAvatar({
 
   return (
     <div
-      className={`rounded-full overflow-hidden border border-gray-300 ${
+      className={`rounded-full overflow-hidden border border-gray-300 aspect-square ${
         clickable ? "cursor-pointer" : ""
       }`}
       style={{ width: size, height: size }}
@@ -129,22 +129,13 @@ export default function UserAvatar({
         />
       ) : user ? (
         <div
-          className="bg-gray-300 text-gray-700 flex items-center justify-center font-bold"
-          style={{
-            width: size,
-            height: size,
-            fontSize: size / 2,
-            // borderRadius: "9999px",
-          }}
+          className="bg-gray-300 text-gray-700 flex items-center justify-center font-bold w-full h-full"
+          style={{ fontSize: size / 2 }}
         >
           {getInitials(user.username)}
         </div>
       ) : (
-        // Fallback loading
-        <div
-          className="bg-gray-100 flex items-center justify-center text-gray-400"
-          style={{ width: size, height: size }}
-        >
+        <div className="bg-gray-100 flex items-center justify-center text-gray-400 w-full h-full">
           ...
         </div>
       )}

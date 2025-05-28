@@ -50,15 +50,15 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg text-text">
+    <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content">
       {success && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-700 px-4 py-2 rounded shadow">
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-success text-success-content px-4 py-2 rounded shadow">
           Registered successfully!
         </div>
       )}
       <form
         onSubmit={handleSubmit}
-        className="p-6 bg-white rounded shadow-md w-80 space-y-4"
+        className="p-6 bg-base-200 rounded-box shadow-md w-80 space-y-4"
       >
         <h2 className="text-xl font-bold">Register</h2>
 
@@ -90,7 +90,7 @@ export default function Register() {
           required
         />
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error text-sm">{error}</p>}
 
         <button type="submit" className="btn btn-primary w-full">
           Register

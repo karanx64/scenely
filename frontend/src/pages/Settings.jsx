@@ -40,18 +40,18 @@ export default function Settings() {
 
   return (
     <main className="p-4 space-y-4">
-      <h1 className="text-xl font-semibold mb-2">Settings</h1>
+      <h1 className="text-xl font-semibold mb-2 text-base-content">Settings</h1>
 
       <button
         onClick={handleLogout}
-        className="flex items-center gap-3 px-4 py-2 rounded-lg font-medium hover:bg-red-100 text-red-600"
+        className="flex items-center gap-3 px-4 py-2 rounded-lg font-medium text-error hover:bg-error/10"
       >
         Logout
       </button>
 
       <button
         onClick={handleDeleteAccount}
-        className="w-full bg-red-600 text-white py-2 rounded-lg"
+        className="w-full bg-error text-error-content py-2 rounded-lg hover:bg-error/90"
       >
         Delete Account
       </button>

@@ -18,15 +18,15 @@ export default function Explore() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-semibold mb-4">Explore</h1>
+      <h1 className="text-xl font-semibold mb-4 text-base-content">Explore</h1>
       <SearchUsers />
 
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-base-content/70">Loading...</p>
       ) : posts.length > 0 ? (
         <PostList posts={posts} setPosts={setPosts} />
       ) : (
-        <p>No posts available.</p>
+        <p className="text-base-content/70">No posts available.</p>
       )}
     </div>
   );

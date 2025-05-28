@@ -158,14 +158,19 @@ export default function SelectAvatar() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-bg text-text p-4">
-      <div className="bg-white rounded shadow-md w-full max-w-md p-4 space-y-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 text-base-content p-4">
+      <div className="bg-base-200 rounded-box shadow-md w-full max-w-md p-6 space-y-4">
         <h2 className="text-xl font-bold text-center">Choose Your Avatar</h2>
 
         {!image ? (
-          <input type="file" accept="image/*" onChange={handleFileChange} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="file-input file-input-bordered w-full"
+          />
         ) : (
-          <div className="relative w-full h-72 bg-gray-200 rounded">
+          <div className="relative w-full h-72 bg-base-300 rounded-box">
             <Cropper
               image={image}
               crop={crop}
@@ -186,11 +191,11 @@ export default function SelectAvatar() {
             step={0.1}
             value={zoom}
             onChange={(e) => setZoom(e.target.value)}
-            className="w-full"
+            className="range w-full"
           />
         )}
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error text-sm">{error}</p>}
 
         <button
           onClick={handleUpload}

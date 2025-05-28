@@ -165,10 +165,10 @@ export default function UserProfile() {
 
   return (
     <div className="p-4 text-text">
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-error mb-4">{error}</p>}
 
       {user && (
-        <div className="mb-6">
+        <section className="mb-6">
           {user.avatar ? (
             <img
               src={user.avatar}
@@ -181,21 +181,23 @@ export default function UserProfile() {
             </div>
           )}
 
-          <p>
-            <strong>Username:</strong> {user.username}
-          </p>
-          <p
-            className="cursor-pointer"
-            onClick={() => setShowModal("followers")}
-          >
-            <strong>Followers:</strong> {followersCount}
-          </p>
-          <p
-            className="cursor-pointer"
-            onClick={() => setShowModal("following")}
-          >
-            <strong>Following:</strong> {followingCount}
-          </p>
+          <div className="space-y-1">
+            <p>
+              <strong>Username:</strong> {user.username}
+            </p>
+            <p
+              className="cursor-pointer hover:underline"
+              onClick={() => setShowModal("followers")}
+            >
+              <strong>Followers:</strong> {followersCount}
+            </p>
+            <p
+              className="cursor-pointer hover:underline"
+              onClick={() => setShowModal("following")}
+            >
+              <strong>Following:</strong> {followingCount}
+            </p>
+          </div>
 
           {showModal && (
             <FollowersModal
@@ -205,16 +207,13 @@ export default function UserProfile() {
             />
           )}
 
-          {/* ✅ Show follow/unfollow button (not on your own profile) */}
           {currentUserId && currentUserId !== user._id && (
-            <>
+            <div className="mt-4 flex gap-2">
               <button
                 onClick={handleFollowToggle}
-                className={`mt-2 px-4 py-2 rounded ${
-                  isFollowing
-                    ? "bg-red-500 text-white"
-                    : "bg-blue-500 text-white"
-                }`}
+                className={`px-4 py-2 rounded ${
+                  isFollowing ? "bg-red-500" : "bg-blue-500"
+                } text-white`}
               >
                 {isFollowing ? "Unfollow" : "Follow"}
               </button>
@@ -222,13 +221,13 @@ export default function UserProfile() {
                 onClick={() =>
                   (window.location.href = `/messages?user=${user._id}`)
                 }
-                className="mt-2 ml-2 px-4 py-2 rounded bg-green-500 text-white"
+                className="px-4 py-2 rounded bg-green-500 text-white"
               >
                 Message
               </button>
-            </>
+            </div>
           )}
-        </div>
+        </section>
       )}
 
       <h2 className="text-xl font-semibold mb-2">Posts</h2>

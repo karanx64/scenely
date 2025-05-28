@@ -26,18 +26,18 @@ export default function Messages() {
   }, [searchParams]);
 
   return (
-    <div className="flex">
-      <div className="w-1/3 border-r">
+    <div className="flex h-full border border-base-300 rounded-lg overflow-hidden">
+      <div className="w-1/3 border-r border-base-300">
         <ConversationList userId={currentUserId} onSelect={setRecipientId} />
       </div>
-      <div className="w-2/3 p-4">
+      <div className="w-2/3 p-4 bg-base-100">
         {recipientId ? (
           <MessageThread
             currentUserId={currentUserId}
             recipientId={recipientId}
           />
         ) : (
-          <p>Select a conversation</p>
+          <p className="text-base-content/70 italic">Select a conversation</p>
         )}
       </div>
     </div>

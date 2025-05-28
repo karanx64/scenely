@@ -49,20 +49,27 @@ export default function ConversationList({ userId, onSelect }) {
 
   return (
     <div>
-      {/* Add a check for conversations being an array before mapping */}
       {Array.isArray(conversations) && conversations.length > 0 ? (
         conversations.map((conv) => {
           const participant =
             conv.sender._id === userId ? conv.recipient : conv.sender;
 
           return (
-            <div key={conv._id} onClick={() => onSelect(participant._id)}>
-              <p>{participant.username}</p>
-            </div>
+            <button
+              key={conv._id}
+              onClick={() => onSelect(participant._id)}
+              className="w-full text-left px-4 py-2 rounded-lg hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <p className="text-base-content font-medium">
+                {participant.username}
+              </p>
+            </button>
           );
         })
       ) : (
-        <p>No conversations found.</p> // Or a loading spinner
+        <p className="text-center text-base-content/70 py-4">
+          No conversations found.
+        </p>
       )}
     </div>
   );

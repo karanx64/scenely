@@ -50,10 +50,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bg text-text">
+    <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content">
       <form
         onSubmit={handleSubmit}
-        className="p-6 bg-white rounded shadow-md w-80 space-y-4"
+        className="p-6 bg-base-200 rounded-xl shadow-md w-80 space-y-4"
       >
         <h2 className="text-xl font-bold">Login</h2>
 
@@ -76,13 +76,13 @@ export default function Login() {
           required
         />
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-error text-sm">{error}</p>}
 
         <button type="submit" className="btn btn-primary w-full">
           Login
         </button>
         <p className="text-sm text-center">
-          Don&apos;t have an account?{" "}
+          Don't have an account?{" "}
           <a href="/register" className="text-primary hover:underline">
             Register
           </a>

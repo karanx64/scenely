@@ -448,7 +448,7 @@ export default function UploadForm() {
           multiple
           accept="image/*"
           onChange={handleFiles}
-          className="w-full p-2 border rounded"
+          className="file-input file-input-bordered w-full"
         />
       )}
 
@@ -465,22 +465,16 @@ export default function UploadForm() {
             mode="crop"
           />
           <div className="flex gap-2">
-            <button
-              className="bg-gray-400 text-white px-4 py-2 rounded"
-              onClick={handlePrev}
-            >
+            <button className="btn btn-neutral" onClick={handlePrev}>
               Previous
             </button>
             <button
-              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded"
+              className="btn btn-primary flex-1"
               onClick={handleCropAndContinue}
             >
               {currentIndex < selectedImages.length - 1 ? "Next" : "Continue"}
             </button>
-            <button
-              className="bg-gray-400 text-white px-4 py-2 rounded"
-              onClick={handleNext}
-            >
+            <button className="btn btn-neutral" onClick={handleNext}>
               Next
             </button>
           </div>
@@ -499,7 +493,7 @@ export default function UploadForm() {
           <MovieSearch media={media} setMedia={setMedia} />
 
           <textarea
-            className="w-full border rounded p-2"
+            className="textarea textarea-bordered w-full"
             placeholder="Write a caption..."
             value={caption}
             onChange={(e) => setCaption(e.target.value)}
@@ -508,7 +502,7 @@ export default function UploadForm() {
           <select
             value={emoji}
             onChange={(e) => setEmoji(e.target.value)}
-            className="w-full border rounded p-2"
+            className="select select-bordered w-full"
           >
             <option value="🙂">🙂 Happy</option>
             <option value="😢">😢 Sad</option>
@@ -518,7 +512,7 @@ export default function UploadForm() {
           </select>
 
           <button
-            className="w-full bg-red-600 text-white px-4 py-2 rounded"
+            className="btn btn-error w-full"
             onClick={handleSubmit}
             disabled={uploading}
           >
