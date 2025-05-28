@@ -1,93 +1,6 @@
-// // src/pages/SelectAvatar.jsx
-// import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import axios from "axios";
-
-// export default function SelectAvatar() {
-//   const [file, setFile] = useState(null);
-//   const [uploading, setUploading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const navigate = useNavigate();
-
-//   const handleFileChange = (e) => {
-//     setFile(e.target.files[0]);
-//   };
-
-//   const handleUpload = async () => {
-//     if (!file) return;
-
-//     setUploading(true);
-//     setError(null);
-
-//     try {
-//       // 1. Upload to Cloudinary
-//       const formData = new FormData();
-//       formData.append("file", file);
-//       formData.append(
-//         "upload_preset",
-//         import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-//       );
-
-//       const uploadRes = await axios.post(
-//         import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,
-//         formData
-//       );
-
-//       const avatarUrl = uploadRes.data.secure_url;
-
-//       // 2. Update user on backend
-//       const token = localStorage.getItem("token");
-//       await axios.put(
-//         `${import.meta.env.VITE_API_URL}/users/avatar`,
-//         { avatarUrl },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       // 3. Navigate to home
-//       navigate("/");
-//     } catch (err) {
-//       console.error(err);
-//       setError("Failed to upload avatar");
-//     } finally {
-//       setUploading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-bg text-text">
-//       <div className="p-6 bg-white rounded shadow-md w-96 space-y-4 text-center">
-//         <h2 className="text-xl font-bold">Choose Your Avatar</h2>
-
-//         <input type="file" accept="image/*" onChange={handleFileChange} />
-//         {file && (
-//           <img
-//             src={URL.createObjectURL(file)}
-//             alt="Preview"
-//             className="h-32 w-32 rounded-full object-cover mx-auto"
-//           />
-//         )}
-
-//         {error && <p className="text-red-500">{error}</p>}
-
-//         <button
-//           onClick={handleUpload}
-//           className="btn btn-primary w-full"
-//           disabled={uploading || !file}
-//         >
-//           {uploading ? "Uploading..." : "Save and Continue"}
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
-
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import Cropper from "react-easy-crop";
-import getCroppedImage from "../utils/cropImage"; // helper to get cropped blob
+import getCroppedImage from "../utils/cropImage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -99,16 +12,18 @@ export default function SelectAvatar() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const imageRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      const imageUrl = URL.createObjectURL(file);
+      setImage(imageUrl);
     }
   };
 
-  const onCropComplete = useCallback((_, croppedPixels) => {
-    setCroppedAreaPixels(croppedPixels);
+  const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
   const handleUpload = async () => {
@@ -118,41 +33,51 @@ export default function SelectAvatar() {
     setError(null);
 
     try {
-      // Get cropped image blob
-      const croppedBlob = await getCroppedImage(image, croppedAreaPixels);
+      // Create an HTMLImageElement from the URL
+      const img = new Image();
+      img.onload = async () => {
+        // Get cropped image file
+        const { file } = await getCroppedImage(img, croppedAreaPixels);
 
-      const formData = new FormData();
-      formData.append("file", croppedBlob.file);
-      formData.append(
-        "upload_preset",
-        import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-      );
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append(
+          "upload_preset",
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+        );
 
-      // Upload to Cloudinary
-      const uploadRes = await axios.post(
-        import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,
-        formData
-      );
+        // Upload to Cloudinary
+        const uploadRes = await axios.post(
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,
+          formData
+        );
 
-      const avatarUrl = uploadRes.data.secure_url;
+        const avatarUrl = uploadRes.data.secure_url;
 
-      // Update backend user avatar
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/users/avatar`,
-        { avatarUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+        // Update backend user avatar
+        const token = localStorage.getItem("token");
+        await axios.put(
+          `${import.meta.env.VITE_API_URL}/users/avatar`,
+          { avatarUrl },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-      navigate("/");
+        navigate("/");
+        setUploading(false); // Move this line here
+      };
+      img.onerror = (e) => {
+        console.error("Error loading image:", e);
+        setError("Failed to load image");
+        setUploading(false);
+      };
+      img.src = image;
     } catch (err) {
       console.error(err);
       setError("Upload failed");
-    } finally {
       setUploading(false);
     }
   };
