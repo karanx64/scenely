@@ -5,8 +5,8 @@
       "destination": "https://scenely-backend.onrender.com/api/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/frontend/build/index.html"
+      "source": "/(.*)",
+      "destination": "/frontend/build/index.html"
     }
   ],
   "builds": [
