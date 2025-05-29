@@ -1,0 +1,24 @@
+// scenely/vercel.json
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://scenely-backend.onrender.com/api/$1"
+    }
+  ],
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/build/index.html" // THIS IS THE CRUCIAL LINE for client-side routing
+    }
+  ]
+}
