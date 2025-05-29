@@ -1,7 +1,6 @@
-// frontend/src/components/conversationList.jsx
 import { useEffect, useState } from "react";
 
-export default function ConversationList({ userId, onSelect }) {
+export default function ConversationList({ userId, onSelect, selectedId }) {
   const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
@@ -9,11 +8,9 @@ export default function ConversationList({ userId, onSelect }) {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          // Add a check for token
           console.error("No authentication token found.");
           return;
         }
-
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/messages/conversations`,
           {
@@ -22,26 +19,21 @@ export default function ConversationList({ userId, onSelect }) {
             },
           }
         );
-
-        // --- IMPORTANT: Handle HTTP errors here ---
         if (!res.ok) {
-          const errorData = await res.json(); // Try to parse error message from backend
+          const errorData = await res.json();
           console.error(
             `HTTP error! status: ${res.status}, message: ${
               errorData.message || res.statusText
             }`
           );
-          setConversations([]); // Ensure conversations is an empty array on error
-          return; // Stop execution here
+          setConversations([]);
+          return;
         }
-        // --- End of error handling ---
-
         const data = await res.json();
-        // console.log("Fetched conversations data:", data); // Add for debugging
         setConversations(data);
       } catch (err) {
         console.error("Failed to fetch conversations", err);
-        setConversations([]); // Ensure conversations is an empty array on catch
+        setConversations([]);
       }
     };
     fetchConversations();
@@ -53,12 +45,16 @@ export default function ConversationList({ userId, onSelect }) {
         conversations.map((conv) => {
           const participant =
             conv.sender._id === userId ? conv.recipient : conv.sender;
-
+          const isSelected = participant._id === selectedId;
           return (
             <button
               key={conv._id}
-              onClick={() => onSelect(participant._id)}
-              className="w-full text-left px-4 py-2 rounded-lg hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-primary"
+              onClick={() => onSelect(participant._id, participant)}
+              className={`w-full text-left px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                isSelected
+                  ? "bg-primary text-primary-content font-bold"
+                  : "hover:bg-base-200"
+              }`}
             >
               <p className="text-base-content font-medium">
                 {participant.username}

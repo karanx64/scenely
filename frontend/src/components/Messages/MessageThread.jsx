@@ -1,14 +1,19 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import PostCard from "../PostCard";
 
-export default function MessageThread({ recipientId, currentUserId }) {
+export default function MessageThread({
+  recipientId,
+  currentUserId,
+  recipientInfo,
+}) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-  const messageSendRef = useRef(null);
   const scrollContainerRef = useRef(null);
-  const [autoScroll, setAutoScroll] = useState(true);
+  const messagesEndRef = useRef(null);
+  const [shouldScroll, setShouldScroll] = useState(true);
 
-  const fetchMessages = async () => {
+  // Fetch messages
+  const fetchMessages = useCallback(async () => {
     const res = await fetch(
       `${import.meta.env.VITE_API_URL}/messages/conversation/${recipientId}`,
       {
@@ -19,17 +24,18 @@ export default function MessageThread({ recipientId, currentUserId }) {
     );
     const data = await res.json();
     setMessages(data);
-  };
+  }, [recipientId]);
 
+  // Polling for new messages
   useEffect(() => {
     fetchMessages();
     const interval = setInterval(() => {
       fetchMessages();
     }, 1500);
     return () => clearInterval(interval);
-  }, [recipientId]);
+  }, [fetchMessages]);
 
-  // Detect user scroll
+  // Detect user scroll to decide if we should auto-scroll on new messages
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -39,21 +45,25 @@ export default function MessageThread({ recipientId, currentUserId }) {
       const atBottom =
         container.scrollHeight - container.scrollTop - container.clientHeight <
         80;
-      setAutoScroll(atBottom);
+      setShouldScroll(atBottom);
     };
 
     container.addEventListener("scroll", handleScroll);
+    // Set initial scroll state
+    handleScroll();
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Scroll to bottom if autoScroll is enabled
+  // Scroll to bottom if shouldScroll is true (new messages from polling)
   useEffect(() => {
-    if (autoScroll) {
-      messageSendRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (shouldScroll) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, autoScroll]);
+  }, [messages, shouldScroll]);
 
+  // Always scroll to bottom when sending a new message
   const sendMessage = async () => {
+    if (!text.trim()) return;
     const res = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
       method: "POST",
       headers: {
@@ -73,7 +83,22 @@ export default function MessageThread({ recipientId, currentUserId }) {
     };
     setMessages((prev) => [...prev, formattedMessage]);
     setText("");
+    // Always scroll to bottom when sending
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 50);
   };
+
+  // Get recipient username from messages
+  let recipientUsername = "";
+  if (messages.length > 0) {
+    const firstMsg = messages[0];
+    if (firstMsg.sender && firstMsg.sender._id !== currentUserId) {
+      recipientUsername = firstMsg.sender.username;
+    } else if (firstMsg.recipient && firstMsg.recipient._id !== currentUserId) {
+      recipientUsername = firstMsg.recipient.username;
+    }
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -81,6 +106,17 @@ export default function MessageThread({ recipientId, currentUserId }) {
         className="overflow-y-auto h-80 px-2 space-y-2"
         ref={scrollContainerRef}
       >
+        <div className="px-2 py-1 text-lg font-bold border-b border-base-300 bg-base-100 sticky top-0 z-10 flex items-center gap-2">
+          {recipientInfo?.avatar && (
+            <img
+              src={recipientInfo.avatar}
+              alt={recipientInfo.username}
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          )}
+          <span>{recipientInfo?.username || "Conversation"}</span>
+        </div>
+
         {messages.map((msg) => {
           const isMine =
             (msg.sender && msg.sender._id === currentUserId) ||
@@ -99,7 +135,7 @@ export default function MessageThread({ recipientId, currentUserId }) {
             </div>
           );
         })}
-        <div ref={messageSendRef} />
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="flex gap-2 mt-2">
