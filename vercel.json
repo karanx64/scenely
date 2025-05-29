@@ -3,6 +3,10 @@
     {
       "source": "/api/(.*)",
       "destination": "https://scenely-backend.onrender.com/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/build/index.html"
     }
   ],
   "builds": [
@@ -12,12 +16,6 @@
       "config": {
         "distDir": "build"
       }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/build/index.html"
     }
   ]
 }
