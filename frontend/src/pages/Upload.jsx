@@ -235,7 +235,14 @@ const UploadPage = () => {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4 text-base-content">Upload Post</h1>
+
       <div className="bg-base-100 p-4 rounded-lg shadow-md">
+        <button
+          className="btn btn-outline"
+          onClick={() => window.location.reload()}
+        >
+          Discard
+        </button>
         <UploadForm />
       </div>
     </div>

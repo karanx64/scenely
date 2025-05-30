@@ -491,12 +491,7 @@ export default function UploadForm() {
 
       {step === "crop" && selectedImages.length > 0 && (
         <>
-          <button
-            className="btn btn-outline"
-            onClick={() => window.location.reload()}
-          >
-            Discard
-          </button>
+          
 
           <div className="space-y-4">
             {selectedImages.length > 1 && (
