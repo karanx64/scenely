@@ -142,7 +142,7 @@ export default function PostPreview({
         />
       )}
 
-      {images.length > 1 && (
+      {false && images.length > 1 && (
         <>
           <button
             onClick={prev}

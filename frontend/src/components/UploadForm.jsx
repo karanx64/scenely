@@ -351,33 +351,47 @@ export default function UploadForm() {
     });
   };
 
+  const resetCrop = () => {
+    setCompletedCrop(null);
+    setImageRef(null);
+    setCrop({
+      aspect: 1,
+      unit: "%",
+      width: 80,
+      height: 80,
+      x: 10,
+      y: 10,
+    });
+  };
+
   const handleCropAndContinue = async () => {
     if (!completedCrop || !imageRef) {
       setCropError("Please crop the image a little bit.");
       return;
     }
+
     try {
       const cropped = await getCroppedImg(imageRef, completedCrop);
-      setCroppedImages((prev) => {
-        const updated = [...prev];
-        updated[currentIndex] = cropped;
-        return updated;
-      });
+      const updated = [...croppedImages];
+      updated[currentIndex] = cropped;
+      setCroppedImages(updated);
+
       if (currentIndex < selectedImages.length - 1) {
         setCurrentIndex(currentIndex + 1);
-        setCrop({
-          aspect: 1,
-          unit: "%",
-          width: 80,
-          height: 80,
-          x: 10,
-          y: 10,
-        });
-        setCropError(""); // clear error on next
+        resetCrop();
       } else {
+        const missing = updated
+          .map((img, i) => (img === null ? i + 1 : null))
+          .filter((i) => i !== null);
+
+        if (missing.length > 0) {
+          setCropError(`Images ${missing.join(", ")} not cropped.`);
+          return;
+        }
+
         setStep("review");
         setCurrentIndex(0);
-        setCropError(""); // clear error on review
+        setCropError("");
       }
     } catch (err) {
       console.error("Failed to crop image:", err);
@@ -411,6 +425,13 @@ export default function UploadForm() {
     setCropError(""); // clear error on next
   };
 
+  const Prev = () => {
+    setCurrentIndex((i) => (i === 0 ? croppedImages.length - 1 : i - 1));
+  };
+
+  const Next = () => {
+    setCurrentIndex((i) => (i === croppedImages.length - 1 ? 0 : i + 1));
+  };
   const handleSubmit = async () => {
     setUploading(true);
     try {
@@ -462,6 +483,20 @@ export default function UploadForm() {
 
       {step === "crop" && selectedImages.length > 0 && (
         <div className="space-y-4">
+          <div className="flex gap-2 pt-2 relative z-10">
+            <button className="btn btn-neutral" onClick={handlePrev}>
+              Previous
+            </button>
+            <button
+              className="btn btn-primary flex-1"
+              onClick={handleCropAndContinue}
+            >
+              {currentIndex < selectedImages.length - 1 ? "Next" : "Continue"}
+            </button>
+            <button className="btn btn-neutral" onClick={handleNext}>
+              Next
+            </button>
+          </div>
           <PostPreview
             images={selectedImages}
             currentIndex={currentIndex}
@@ -477,20 +512,6 @@ export default function UploadForm() {
               {cropError}
             </div>
           )}
-          <div className="flex gap-2">
-            <button className="btn btn-neutral" onClick={handlePrev}>
-              Previous
-            </button>
-            <button
-              className="btn btn-primary flex-1"
-              onClick={handleCropAndContinue}
-            >
-              {currentIndex < selectedImages.length - 1 ? "Next" : "Continue"}
-            </button>
-            <button className="btn btn-neutral" onClick={handleNext}>
-              Next
-            </button>
-          </div>
         </div>
       )}
 
@@ -502,6 +523,15 @@ export default function UploadForm() {
             setCurrentIndex={setCurrentIndex}
             mode="review"
           />
+
+          <div className="flex gap-2 pt-2 relative z-10">
+            <button className="btn btn-neutral" onClick={Prev}>
+              Previous
+            </button>
+            <button className="btn btn-neutral" onClick={Next}>
+              Next
+            </button>
+          </div>
 
           <MovieSearch media={media} setMedia={setMedia} />
 
