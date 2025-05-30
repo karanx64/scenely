@@ -220,7 +220,9 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
   const handleDeleteConversation = async (participantId) => {
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/messages/conversation/${participantId}`,
+        `${
+          import.meta.env.VITE_API_URL
+        }/messages/conversation/${participantId}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -230,7 +232,8 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
       setConversations((prev) =>
         prev.filter(
           (conv) =>
-            conv.sender._id !== participantId && conv.recipient._id !== participantId
+            conv.sender._id !== participantId &&
+            conv.recipient._id !== participantId
         )
       );
       if (participantId === selectedId) onSelect(null, null); // Clear open conversation
