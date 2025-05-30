@@ -6,10 +6,13 @@ import {
   User,
   Settings,
   MessageCircle,
+  ArrowLeftFromLine,
+  ArrowRightFromLine,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
 import Scenely from "../../public/scenely.png";
+import { useState } from "react";
 
 const navItems = [
   { to: "/", icon: <Home size={20} />, label: "Home" },
@@ -21,43 +24,65 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const [collapsed, setCollapsed] = useState(false); // State for collapsed sidebar
+
   return (
-    <div className="hidden md:flex h-screen w-50 bg-base-100 text-base-content flex-col shadow-md p-6 sticky top-0 left-0 justify-between ">
-      <div className="flex flex-col mb-10">
+    <div className="hidden md:flex h-screen bg-base-100 text-base-content flex-col shadow-md sticky top-0 left-0">
+      {/* Sidebar content */}
+      <div
+        className={`flex flex-col ${
+          collapsed ? "w-20" : "w-60"
+        } transition-all duration-300`}
+      >
+        {/* Logo */}
         <NavLink
           to="/"
-          className="text-4xl font-bold text-primary h-20 text-center flex items-center justify-center"
+          className={`text-4xl font-bold text-primary h-20 text-center flex items-center justify-center ${
+            collapsed ? "hidden" : "block"
+          }`}
         >
-          <div className="flex items-center ">
-            <img src={Scenely} alt="" width={30} />
+          <div className="flex items-center">
+            <img src={Scenely} alt="Scenely Logo" width={30} />
             <h1>cenely</h1>
           </div>
         </NavLink>
-      </div>
 
-      <div>
+        {/* Navigation */}
         <nav className="flex flex-col">
           {navItems.map(({ to, icon, label }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-3  h-20  font-medium transition-colors rounded-r-4xl ml-20 ${
+                `flex items-center gap-3 h-12 px-4 font-medium transition-colors rounded-r-4xl ${
                   isActive
-                    ? "bg-primary text-primary-content "
+                    ? "bg-primary text-primary-content"
                     : "hover:bg-secondary/50"
                 }`
               }
             >
               {icon}
-              <span>{label}</span>
+              {!collapsed && <span>{label}</span>}
             </NavLink>
           ))}
         </nav>
-      </div>
 
-      <div className="flex flex-col">
-        <ThemeSwitcher className="rounded-l-none rounded-r-4xl mb-10 h-20" />
+        {/* Toggle Button */}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="btn btn-outline mt-4 mx-auto"
+        >
+          {collapsed ? (
+            <ArrowRightFromLine size={20} />
+          ) : (
+            <ArrowLeftFromLine size={20} />
+          )}
+        </button>
+
+        {/* Theme Switcher */}
+        <div className="mt-auto">
+          <ThemeSwitcher className="rounded-l-none rounded-r-4xl mb-10 h-20" />
+        </div>
       </div>
     </div>
   );
