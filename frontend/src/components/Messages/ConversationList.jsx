@@ -1,5 +1,6 @@
 // components/messages/ConversationList.jsx
 import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 
 function SearchUsers({ onUserSelect }) {
   const [query, setQuery] = useState("");
@@ -36,19 +37,20 @@ function SearchUsers({ onUserSelect }) {
   };
 
   return (
-    <div className="p-2 flex flex-col">
-      <form onSubmit={handleSearch} className="flex  max-w-md ">
+    <div className="flex justify-center p-4 flex-col align-middle">
+      <form
+        onSubmit={handleSearch}
+        className="flex flex-row items-center w-full max-w-md space-y-2 m-auto "
+      >
         <input
           type="text"
           placeholder="Search users by name..."
-          className="input input-bordered flex-1 rounded-r-none" // Adjusted for black background
+          className="input input-bordered w-3/4 rounded-r-none "
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button type="submit" className="btn btn-primary rounded-l-none ">
-          {" "}
-          {/* Adjusted for purple button */}
-          Search
+        <button type="submit" className="btn btn-primary ">
+          <Search size={20} className="text-primary-content" />
         </button>
       </form>
       {error && <p className="text-red-500 mb-2">{error}</p>}{" "}

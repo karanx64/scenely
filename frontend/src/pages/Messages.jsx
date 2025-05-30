@@ -8,6 +8,7 @@ export default function Messages() {
   const [recipientInfo, setRecipientInfo] = useState(null); // NEW
   const [currentUserId, setCurrentUserId] = useState(null);
   const [searchParams] = useSearchParams();
+  const [showThread, setShowThread] = useState(false); // NEW: toggle for small screens
 
   // Restore recipientId and recipientInfo from localStorage on mount
   useEffect(() => {
@@ -49,28 +50,47 @@ export default function Messages() {
 
   return (
     <div className="flex h-[calc(100vh-4rem)] border border-base-300 rounded-lg overflow-hidden">
-      {" "}
-      <div className="w-1/3 border-r border-base-300">
+      {/* Small screen behavior */}
+      <div
+        className={`w-full sm:w-1/3 border-r border-base-300 ${
+          showThread ? "hidden sm:block" : "block"
+        }`}
+      >
         <ConversationList
           userId={currentUserId}
           onSelect={(id, info) => {
             setRecipientId(id);
             setRecipientInfo(info);
+            setShowThread(true); // Show thread on small screens
           }}
           selectedId={recipientId}
         />
       </div>
-      <div className="w-2/3 p-4 bg-base-100">
+      <div
+        className={`w-full sm:w-2/3 p-4 bg-base-100 ${
+          showThread ? "block" : "hidden sm:block"
+        }`}
+      >
         {recipientId ? (
-          <MessageThread
-            currentUserId={currentUserId}
-            recipientId={recipientId}
-            recipientInfo={recipientInfo}
-            onClearThread={() => {
-              setRecipientId(null);
-              setRecipientInfo(null);
-            }}
-          />
+          <>
+            {/* Back button for small screens */}
+            <button
+              className="btn btn-outline mb-4 sm:hidden"
+              onClick={() => setShowThread(false)}
+            >
+              Back
+            </button>
+            <MessageThread
+              currentUserId={currentUserId}
+              recipientId={recipientId}
+              recipientInfo={recipientInfo}
+              onClearThread={() => {
+                setRecipientId(null);
+                setRecipientInfo(null);
+                setShowThread(false); // Return to conversation list
+              }}
+            />
+          </>
         ) : (
           <p className="text-base-content/70 italic">Select a conversation</p>
         )}
