@@ -1,6 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import Modal from "../components/Modal";
+import { useState } from "react";
 
 export default function Settings() {
+  const [error, setError] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showLogoutModal, setshowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -9,13 +14,6 @@ export default function Settings() {
   };
 
   const handleDeleteAccount = async () => {
-    if (
-      !confirm(
-        "Are you sure you want to delete your account? This cannot be undone."
-      )
-    )
-      return;
-
     const token = localStorage.getItem("token");
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
@@ -34,7 +32,7 @@ export default function Settings() {
       localStorage.removeItem("token");
       navigate("/login");
     } catch (err) {
-      alert(err.message);
+      setError(err.message);
     }
   };
 
@@ -43,18 +41,52 @@ export default function Settings() {
       <h1 className="text-xl font-semibold mb-2 text-base-content">Settings</h1>
 
       <button
-        onClick={handleLogout}
+        onClick={() => {
+          setshowLogoutModal(true);
+        }}
         className="flex items-center gap-3 px-4 py-2 rounded-lg font-medium text-error hover:bg-error/10"
       >
         Logout
       </button>
+      {showLogoutModal && (
+        <Modal
+          title="Confirm Logout"
+          description="Do you want to logout?"
+          onClose={() => setshowLogoutModal(false)}
+          actions={[
+            <button className="btn" onClick={() => setshowLogoutModal(false)}>
+              No
+            </button>,
+            <button className="btn btn-error" onClick={handleLogout}>
+              Yes
+            </button>,
+          ]}
+        ></Modal>
+      )}
 
       <button
-        onClick={handleDeleteAccount}
+        onClick={() => setShowDeleteModal(true)}
         className="w-full bg-error text-error-content py-2 rounded-lg hover:bg-error/90"
       >
         Delete Account
       </button>
+      {showDeleteModal && (
+        <Modal
+          title="Confirm Deletion"
+          description="Are you sure you want to delete your account? This cannot be undone."
+          onClose={() => setShowDeleteModal(false)}
+          actions={[
+            <button className="btn" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </button>,
+            <button className="btn btn-error" onClick={handleDeleteAccount}>
+              Delete
+            </button>,
+          ]}
+        >
+          {error && <p className="text-error mt-2">{error}</p>}
+        </Modal>
+      )}
     </main>
   );
 }

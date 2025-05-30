@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ export default function Register() {
     password: "",
   });
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,12 +24,13 @@ export default function Register() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const [success, setSuccess] = useState(false); // 👈 new state
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
+    setLoading(true); // Start loading
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
@@ -39,13 +42,14 @@ export default function Register() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to register");
 
-      // ✅ Show success message and delay redirect
       setSuccess(true);
       setTimeout(() => {
         navigate("/login");
-      }, 1500); // wait 1.5 seconds
+      }, 1500);
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -92,8 +96,12 @@ export default function Register() {
 
         {error && <p className="text-error text-sm">{error}</p>}
 
-        <button type="submit" className="btn btn-primary w-full">
-          Register
+        <button
+          type="submit"
+          className="btn btn-primary w-full"
+          disabled={loading}
+        >
+          {loading ? <Loader type="spinner" size="sm" /> : "Register"}
         </button>
         <p className="text-sm text-center">
           Already have an account?{" "}

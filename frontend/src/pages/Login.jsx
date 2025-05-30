@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true); // Start loading
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
@@ -46,6 +49,8 @@ export default function Login() {
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -78,8 +83,12 @@ export default function Login() {
 
         {error && <p className="text-error text-sm">{error}</p>}
 
-        <button type="submit" className="btn btn-primary w-full">
-          Login
+        <button
+          type="submit"
+          className="btn btn-primary w-full"
+          disabled={loading}
+        >
+          {loading ? <Loader type="spinner" size="sm" /> : "Login"}
         </button>
         <p className="text-sm text-center">
           Don't have an account?{" "}

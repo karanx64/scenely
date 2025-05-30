@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react";
 import axios from "axios";
 import SharePostModal from "./SharePostModal";
+import Modal from "./Modal";
+import Loader from "./Loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,6 +17,8 @@ export default function PostCard({ post }) {
   const [viewsCount, setViewsCount] = useState(post.views?.length || 0);
 
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // Modal state
+  const [deleting, setDeleting] = useState(false); // Loading state for delete
 
   // useEffect(() => {
 
@@ -123,8 +127,7 @@ export default function PostCard({ post }) {
   }, [token]);
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
-
+    setDeleting(true); // Start loading
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/posts/${post._id}`,
@@ -163,13 +166,16 @@ export default function PostCard({ post }) {
     } catch (err) {
       console.error("Delete failed:", err);
       alert("Failed to delete post");
+    } finally {
+      setDeleting(false); // Stop loading
+      setShowDeleteModal(false); // Close modal
     }
   };
 
   let startX = 0;
 
   return (
-    <div className="card w-80 bg-base-100 shadow-md mb-6">
+    <div className="card w-full bg-base-100 shadow-md">
       <div
         className="relative aspect-square bg-black"
         onTouchStart={(e) => (startX = e.touches[0].clientX)}
@@ -231,7 +237,10 @@ export default function PostCard({ post }) {
         </div>
 
         {currentUserId === post.userId._id && (
-          <button className="btn btn-error btn-sm mt-2" onClick={handleDelete}>
+          <button
+            className="btn btn-error btn-sm mt-2"
+            onClick={() => setShowDeleteModal(true)}
+          >
             Delete Post
           </button>
         )}
@@ -250,6 +259,17 @@ export default function PostCard({ post }) {
             postId={post._id}
             onClose={() => setShowShareModal(false)}
           />
+        )}
+        {showDeleteModal && (
+          <Modal
+            title="Confirm Deletion"
+            description="Are you sure you want to delete this post? This cannot be undone."
+            type="confirm"
+            onConfirm={handleDelete}
+            onClose={() => setShowDeleteModal(false)}
+          >
+            {deleting && <Loader type="spinner" size="sm" />}
+          </Modal>
         )}
       </div>
     </div>
