@@ -73,4 +73,20 @@ router.get("/conversations", verifyToken, async (req, res) => {
   }
 });
 
+// Delete all messages in conversation with another user
+router.delete("/conversation/:userId", verifyToken, async (req, res) => {
+  const userId = req.params.userId;
+  try {
+    await Message.deleteMany({
+      $or: [
+        { sender: req.user.id, recipient: userId },
+        { sender: userId, recipient: req.user.id },
+      ],
+    });
+    res.json({ message: "Conversation deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete conversation" });
+  }
+});
+
 export default router;

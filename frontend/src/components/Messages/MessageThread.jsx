@@ -5,6 +5,7 @@ export default function MessageThread({
   recipientId,
   currentUserId,
   recipientInfo,
+  onClearThread, // NEW PROP
 }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
@@ -99,6 +100,13 @@ export default function MessageThread({
       recipientUsername = firstMsg.recipient.username;
     }
   }
+
+  // Clear messages if recipientId changes (e.g., conversation is deleted)
+  useEffect(() => {
+    if (!recipientId) {
+      setMessages([]); // Clear messages when recipientId is null
+    }
+  }, [recipientId]);
 
   return (
     <div className="flex flex-col h-full">

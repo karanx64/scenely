@@ -217,6 +217,28 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
     }
   };
 
+  const handleDeleteConversation = async (participantId) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/messages/conversation/${participantId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (!res.ok) throw new Error("Failed to delete conversation");
+      setConversations((prev) =>
+        prev.filter(
+          (conv) =>
+            conv.sender._id !== participantId && conv.recipient._id !== participantId
+        )
+      );
+      if (participantId === selectedId) onSelect(null, null); // Clear open conversation
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex gap-4">
       <div className="w-1/3">
@@ -233,19 +255,26 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
               conv.sender._id === userId ? conv.recipient : conv.sender;
             const isSelected = participant._id === selectedId;
             return (
-              <button
-                key={conv._id}
-                onClick={() => onSelect(participant._id, participant)}
-                className={`w-full text-left px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
-                  isSelected
-                    ? "bg-primary text-primary-content font-bold"
-                    : "hover:bg-base-200"
-                }`}
-              >
-                <p className="text-base-content font-medium">
-                  {participant.username}
-                </p>
-              </button>
+              <div key={conv._id} className="flex items-center gap-2">
+                <button
+                  onClick={() => onSelect(participant._id, participant)}
+                  className={`flex-1 text-left px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                    isSelected
+                      ? "bg-primary text-primary-content font-bold"
+                      : "hover:bg-base-200"
+                  }`}
+                >
+                  <p className="text-base-content font-medium">
+                    {participant.username}
+                  </p>
+                </button>
+                <button
+                  onClick={() => handleDeleteConversation(participant._id)}
+                  className="btn btn-error btn-sm"
+                >
+                  Delete
+                </button>
+              </div>
             );
           })
         )}

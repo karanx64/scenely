@@ -128,6 +128,10 @@ export default function Messages() {
             currentUserId={currentUserId}
             recipientId={recipientId}
             recipientInfo={recipientInfo}
+            onClearThread={() => {
+              setRecipientId(null);
+              setRecipientInfo(null);
+            }}
           />
         ) : (
           <p className="text-base-content/70 italic">Select a conversation</p>
