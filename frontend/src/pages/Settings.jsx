@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/Modal";
 import { useState } from "react";
+import ThemeSwitcher from "../components/ThemeSwitcher";
 
 export default function Settings() {
   const [error, setError] = useState("");
@@ -39,7 +40,7 @@ export default function Settings() {
   return (
     <main className="p-4 space-y-4">
       <h1 className="text-xl font-semibold mb-2 text-base-content">Settings</h1>
-
+      <ThemeSwitcher />
       <button
         onClick={() => {
           setshowLogoutModal(true);

@@ -5,10 +5,10 @@ import {
   Compass,
   User,
   Settings,
-  LogOut,
   MessageCircle,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
+import ThemeSwitcher from "./ThemeSwitcher";
 
 const navItems = [
   { to: "/", icon: <Home size={20} />, label: "Home" },
@@ -20,14 +20,6 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  //logout function
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
-
   return (
     <div className="hidden md:flex h-screen w-60 bg-base-100 text-base-content flex-col shadow-md p-6 sticky top-0 left-0 justify-between">
       <div>
@@ -53,13 +45,9 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-3 px-4 py-2 rounded-xl font-medium text-error hover:bg-error/10"
-      >
-        <LogOut size={20} />
-        <span>Logout</span>
-      </button>
+      <div className="flex flex-col">
+        <ThemeSwitcher />
+      </div>
     </div>
   );
 }
