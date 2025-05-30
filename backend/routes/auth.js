@@ -66,11 +66,46 @@ router.post("/login", async (req, res) => {
 });
 
 //GET current user info
+// router.get("/me", verifyToken, async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user.id).select("-password");
+//     if (!user) return res.status(404).json({ message: "User not found" });
+//     res.json(user);
+//   } catch (err) {
+//     res.status(500).json({ message: "Server error", error: err.message });
+//   }
+// });
+
 router.get("/me", verifyToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    let user = await User.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
+
+    const validFollowers = await User.find({
+      _id: { $in: user.followers },
+    }).select("_id");
+
+    const validFollowing = await User.find({
+      _id: { $in: user.following },
+    }).select("_id");
+
+    const validFollowerIds = validFollowers.map((u) => u._id.toString());
+    const validFollowingIds = validFollowing.map((u) => u._id.toString());
+
+    // Optional: update the database to clean invalid ObjectIDs permanently
+    user.followers = validFollowerIds;
+    user.following = validFollowingIds;
+    await user.save();
+
+    res.json({
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      hasAvatar: user.hasAvatar,
+      avatar: user.avatar,
+      followers: validFollowerIds,
+      following: validFollowingIds,
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
