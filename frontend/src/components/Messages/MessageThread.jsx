@@ -111,7 +111,7 @@ export default function MessageThread({
   return (
     <div className="flex flex-col h-full">
       <div
-        className="overflow-y-auto h-80 px-2 space-y-2"
+        className="flex-1 overflow-y-auto px-2 space-y-2"
         ref={scrollContainerRef}
       >
         <div className="px-2 py-1 text-lg font-bold border-b border-base-300 bg-base-100 sticky top-0 z-10 flex items-center gap-2">
