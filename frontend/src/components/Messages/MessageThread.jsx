@@ -9,9 +9,6 @@ export default function MessageThread({
 }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-  const scrollContainerRef = useRef(null);
-  const messagesEndRef = useRef(null);
-  const [shouldScroll, setShouldScroll] = useState(true);
 
   // Fetch messages
   const fetchMessages = useCallback(async () => {
@@ -36,33 +33,7 @@ export default function MessageThread({
     return () => clearInterval(interval);
   }, [fetchMessages]);
 
-  // Detect user scroll to decide if we should auto-scroll on new messages
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      // If user is within 80px of the bottom, enable auto-scroll
-      const atBottom =
-        container.scrollHeight - container.scrollTop - container.clientHeight <
-        80;
-      setShouldScroll(atBottom);
-    };
-
-    container.addEventListener("scroll", handleScroll);
-    // Set initial scroll state
-    handleScroll();
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Scroll to bottom if shouldScroll is true (new messages from polling)
-  useEffect(() => {
-    if (shouldScroll) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages, shouldScroll]);
-
-  // Always scroll to bottom when sending a new message
+  // Send a new message
   const sendMessage = async () => {
     if (!text.trim()) return;
     const res = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
@@ -84,10 +55,6 @@ export default function MessageThread({
     };
     setMessages((prev) => [...prev, formattedMessage]);
     setText("");
-    // Always scroll to bottom when sending
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
   };
 
   // Get recipient username from messages
@@ -110,10 +77,7 @@ export default function MessageThread({
 
   return (
     <div className="flex flex-col h-full">
-      <div
-        className="flex-1 overflow-y-auto px-2 space-y-2"
-        ref={scrollContainerRef}
-      >
+      <div className="flex-1 overflow-y-auto px-2 space-y-2">
         <div className="px-2 py-1 text-lg font-bold border-b border-base-300 bg-base-100 sticky top-0 z-10 flex items-center gap-2">
           {recipientInfo?.avatar && (
             <img
@@ -143,7 +107,6 @@ export default function MessageThread({
             </div>
           );
         })}
-        <div ref={messagesEndRef} />
       </div>
 
       <div className="flex gap-2 mt-2">
