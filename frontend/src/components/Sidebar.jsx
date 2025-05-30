@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
+import Scenely from "../../public/scenely.png";
 
 const navItems = [
   { to: "/", icon: <Home size={20} />, label: "Home" },
@@ -21,20 +22,30 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <div className="hidden md:flex h-screen w-60 bg-base-100 text-base-content flex-col shadow-md p-6 sticky top-0 left-0 justify-between">
-      <div>
-        <h1 className="text-2xl font-bold mb-6 text-primary">Scenely</h1>
+    <div className="hidden md:flex h-screen w-50 bg-base-100 text-base-content flex-col shadow-md p-6 sticky top-0 left-0 justify-between ">
+      <div className="flex flex-col mb-10">
+        <NavLink
+          to="/"
+          className="text-4xl font-bold text-primary h-20 text-center flex items-center justify-center"
+        >
+          <div className="flex items-center ">
+            <img src={Scenely} alt="" width={30} />
+            <h1>cenely</h1>
+          </div>
+        </NavLink>
+      </div>
 
-        <nav className="flex flex-col gap-3">
+      <div>
+        <nav className="flex flex-col">
           {navItems.map(({ to, icon, label }) => (
             <NavLink
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-2 rounded-xl font-medium transition-colors ${
+                `flex items-center gap-3  h-20  font-medium transition-colors rounded-r-4xl ml-20 ${
                   isActive
-                    ? "bg-primary text-primary-content"
-                    : "hover:bg-secondary/20"
+                    ? "bg-primary text-primary-content "
+                    : "hover:bg-secondary/50"
                 }`
               }
             >
@@ -46,7 +57,7 @@ export default function Sidebar() {
       </div>
 
       <div className="flex flex-col">
-        <ThemeSwitcher />
+        <ThemeSwitcher className="rounded-l-none rounded-r-4xl mb-10 h-20" />
       </div>
     </div>
   );
