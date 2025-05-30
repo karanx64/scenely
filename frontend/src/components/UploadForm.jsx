@@ -300,15 +300,23 @@ export default function UploadForm() {
 
   const onImageLoaded = (img) => {
     setImageRef(img);
-    const width = 80;
-    const height = 80;
-    setCrop((prevCrop) => ({
-      ...prevCrop,
-      width,
-      height,
-      x: (100 - width) / 2,
-      y: (100 - height) / 2,
-    }));
+
+    const isPortrait = img.naturalHeight > img.naturalWidth;
+    if (isPortrait) {
+      setCropError("Avoid using portrait images.");
+    } else {
+      setCropError("");
+    }
+
+    setCrop({
+      aspect: 1,
+      unit: "%",
+      width: 80,
+      height: 80,
+      x: 10,
+      y: 10,
+    });
+
     return false;
   };
 
@@ -482,37 +490,62 @@ export default function UploadForm() {
       )}
 
       {step === "crop" && selectedImages.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex gap-2 pt-2 relative z-10">
-            <button className="btn btn-neutral" onClick={handlePrev}>
-              Previous
-            </button>
-            <button
-              className="btn btn-primary flex-1"
-              onClick={handleCropAndContinue}
-            >
-              {currentIndex < selectedImages.length - 1 ? "Next" : "Continue"}
-            </button>
-            <button className="btn btn-neutral" onClick={handleNext}>
-              Next
-            </button>
+        <>
+          <button
+            className="btn btn-outline"
+            onClick={() => window.location.reload()}
+          >
+            Discard
+          </button>
+
+          <div className="space-y-4">
+            {selectedImages.length > 1 && (
+              <div className="flex gap-2 pt-2 relative z-10">
+                <button className="btn btn-neutral" onClick={handlePrev}>
+                  Previous
+                </button>
+                <button
+                  className="btn btn-primary flex-1"
+                  onClick={handleCropAndContinue}
+                >
+                  {currentIndex < selectedImages.length - 1
+                    ? "Next"
+                    : "Continue"}
+                </button>
+                <button className="btn btn-neutral" onClick={handleNext}>
+                  Next
+                </button>
+              </div>
+            )}
+
+            <PostPreview
+              images={selectedImages}
+              currentIndex={currentIndex}
+              setCurrentIndex={setCurrentIndex}
+              crop={crop}
+              setCrop={setCrop}
+              onCropComplete={handleCropComplete}
+              onImageLoaded={onImageLoaded}
+              mode="crop"
+            />
+
+            {selectedImages.length === 1 && (
+              <div className="flex gap-2 pt-2 relative z-10">
+                <button
+                  className="btn btn-primary flex-1"
+                  onClick={handleCropAndContinue}
+                >
+                  Continue
+                </button>
+              </div>
+            )}
+            {cropError && (
+              <div className="text-center text-error font-semibold py-2">
+                {cropError}
+              </div>
+            )}
           </div>
-          <PostPreview
-            images={selectedImages}
-            currentIndex={currentIndex}
-            setCurrentIndex={setCurrentIndex}
-            crop={crop}
-            setCrop={setCrop}
-            onCropComplete={handleCropComplete}
-            onImageLoaded={onImageLoaded}
-            mode="crop"
-          />
-          {cropError && (
-            <div className="text-center text-error font-semibold py-2">
-              {cropError}
-            </div>
-          )}
-        </div>
+        </>
       )}
 
       {step === "review" && (
