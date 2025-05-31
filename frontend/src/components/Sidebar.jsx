@@ -24,64 +24,66 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const [collapsed, setCollapsed] = useState(false); // State for collapsed sidebar
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="hidden md:flex h-screen bg-base-100 text-base-content flex-col shadow-md sticky top-0 left-0">
-      {/* Sidebar content */}
+    <div className="hidden md:flex h-screen bg-base-100 text-base-content shadow-md sticky top-0 left-0">
       <div
-        className={`flex flex-col ${
+        className={`flex flex-col justify-evenly ${
           collapsed ? "w-20" : "w-60"
         } transition-all duration-300`}
       >
         {/* Logo */}
-        <NavLink
-          to="/"
-          className={`text-4xl font-bold text-primary h-20 text-center flex items-center justify-center ${
-            collapsed ? "hidden" : "block"
-          }`}
-        >
-          <div className="flex items-center">
-            <img src={Scenely} alt="Scenely Logo" width={30} />
-            <h1>cenely</h1>
-          </div>
-        </NavLink>
+        <div className="h-20 flex items-center justify-center">
+          <NavLink to="/" className="flex items-center">
+            <img src={Scenely} alt="Scenely Logo" width={50} />
+            {!collapsed && (
+              <h1 className="text-5xl font-bold text-primary ">cenely</h1>
+            )}
+          </NavLink>
+        </div>
 
         {/* Navigation */}
-        <nav className="flex flex-col">
-          {navItems.map(({ to, icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 h-12 px-4 font-medium transition-colors rounded-r-4xl ${
-                  isActive
-                    ? "bg-primary text-primary-content"
-                    : "hover:bg-secondary/50"
-                }`
-              }
-            >
-              {icon}
-              {!collapsed && <span>{label}</span>}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Toggle Button */}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="btn btn-outline mt-4 mx-auto"
-        >
-          {collapsed ? (
-            <ArrowRightFromLine size={20} />
-          ) : (
-            <ArrowLeftFromLine size={20} />
-          )}
-        </button>
-
-        {/* Theme Switcher */}
-        <div className="mt-auto">
-          <ThemeSwitcher className="rounded-l-none rounded-r-4xl mb-10 h-20" />
+        <div>
+          <nav className="flex flex-col flex-1">
+            {navItems.map(({ to, icon, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${
+                    isActive
+                      ? "bg-primary text-primary-content"
+                      : "hover:bg-secondary/50"
+                  }`
+                }
+              >
+                <div className="">{icon}</div>
+                {!collapsed && <span>{label}</span>}
+              </NavLink>
+            ))}
+            {/* Buttons */}
+            <div className="flex flex-col">
+              <button
+                onClick={() => setCollapsed(!collapsed)}
+                className="btn btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
+              >
+                {!collapsed ? (
+                  <>
+                    <ArrowLeftFromLine size={20} /> <p>Collapse</p>
+                  </>
+                ) : (
+                  <>
+                    <ArrowRightFromLine size={20} />
+                  </>
+                )}
+              </button>
+              <ThemeSwitcher
+                className="rounded-l-none rounded-r-4xl h-20 w-full"
+                collapsed={collapsed}
+              />
+            </div>
+          </nav>
         </div>
       </div>
     </div>

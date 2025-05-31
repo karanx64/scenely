@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 
-const ThemeToggle = ({ className = "" }) => {
+const ThemeToggle = ({ className = "", collapsed }) => {
   const [theme, setTheme] = useState(
     () => localStorage.getItem("theme") || "dim"
   );
@@ -18,9 +18,13 @@ const ThemeToggle = ({ className = "" }) => {
   return (
     <button onClick={toggleTheme} className={`btn btn-ghost ${className}`}>
       {theme === "dim" ? <Moon size={20} /> : <Sun size={20} />}
-      <span className="ml-2 hidden sm:inline">
-        {theme === "dim" ? "Dark" : "Light"}
-      </span>
+      {!collapsed && (
+        
+          <span className="ml-2 hidden sm:inline">
+            {theme === "dim" ? "Dark" : "Light"}
+          </span>
+        
+      )}
     </button>
   );
 };
