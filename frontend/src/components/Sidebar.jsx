@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
-import Scenely from "../../public/scenely.png";
+import Scenely from "../../src/assets/Scenely.png";
 import { useState } from "react";
 
 const navItems = [
