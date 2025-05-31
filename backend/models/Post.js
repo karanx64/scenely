@@ -20,6 +20,7 @@ const PostSchema = new mongoose.Schema(
       title: { type: String },
       type: { type: String }, // e.g., 'movie' or 'tv'
       tmdbId: { type: String }, // optional
+      year: { type: String },
     },
   },
   { timestamps: true }

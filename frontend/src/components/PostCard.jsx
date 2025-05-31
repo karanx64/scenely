@@ -1,6 +1,6 @@
 // components/PostCard.jsx
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Popcorn } from "lucide-react";
 import axios from "axios";
 import SharePostModal from "./SharePostModal";
 import Modal from "./Modal";
@@ -177,6 +177,19 @@ export default function PostCard({ post }) {
       </div>
 
       <div className="card-body p-4">
+        {post.media?.title && (
+          <p className="text-sm text-base-content/60 inline-flex gap-1 justify-center">
+            {post.media.type === "movie" && (
+              <Popcorn size={20} className="inline" />
+            )}
+            {post.media.type === "tv" && (
+              <Popcorn size={20} className="inline" />
+            )}
+            {post.media.title}
+            {post.media.year && ` (${post.media.year})`}{" "}
+            {/* Correctly display year in brackets */}
+          </p>
+        )}
         {images.length > 1 && (
           <div className="flex justify-center gap-4 mb-2">
             <button onClick={prev} className="btn btn-sm btn-outline">
@@ -186,12 +199,6 @@ export default function PostCard({ post }) {
               Next <ChevronRight size={16} />
             </button>
           </div>
-        )}
-
-        {post.media?.title && (
-          <p className="text-sm text-base-content/60">
-            📽️ {post.media.title} ({post.media.type})
-          </p>
         )}
 
         {post.caption && <p>{post.caption}</p>}

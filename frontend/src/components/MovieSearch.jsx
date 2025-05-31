@@ -36,7 +36,13 @@ const MovieSearch = ({ media, setMedia }) => {
   };
 
   const clearResults = () => {
-    setMedia((prev) => ({ ...prev, title: "", tmdbId: "", type: "" }));
+    setMedia((prev) => ({
+      ...prev,
+      title: "",
+      tmdbId: "",
+      type: "",
+      date: "",
+    }));
     setMediaResults([]);
   };
 
@@ -63,12 +69,21 @@ const MovieSearch = ({ media, setMedia }) => {
                   title: item.title || item.name,
                   tmdbId: item.id,
                   type: item.media_type,
+                  year: item.release_date
+                    ? item.release_date.slice(0, 4)
+                    : "N/A", // Correctly extract year
                 });
                 setMediaResults([]);
               }}
             >
               {item.title || item.name}{" "}
               <span className="text-sm opacity-70">({item.media_type})</span>
+              {item.release_date && (
+                <span className="text-sm opacity-70">
+                  {" "}
+                  ({item.release_date.slice(0, 4)})
+                </span>
+              )}
             </li>
           ))}
         </ul>
