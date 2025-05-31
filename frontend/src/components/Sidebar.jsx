@@ -95,7 +95,7 @@ export default function Sidebar() {
                 )}
               </button>
               <ThemeSwitcher
-                className="rounded-l-none rounded-r-4xl h-20 w-full"
+                className="btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
                 collapsed={collapsed}
               />
             </div>

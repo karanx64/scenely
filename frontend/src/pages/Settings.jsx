@@ -39,16 +39,27 @@ export default function Settings() {
 
   return (
     <main className="p-20 space-y-20">
-      <h1 className="text-3xl text-center font-semibold mb-20 text-base-content">Settings</h1>
-      <ThemeSwitcher />
-      <button
-        onClick={() => {
-          setshowLogoutModal(true);
-        }}
-        className="flex items-center gap-3 px-4 py-2 rounded-lg font-medium text-error hover:bg-error/10"
-      >
-        Logout
-      </button>
+      <h1 className="text-3xl text-center font-semibold mb-20 text-base-content">
+        Settings
+      </h1>
+      <div className="sm:flex-col md:flex-row min-h-screen flex items-center justify-center gap-6">
+        <ThemeSwitcher className="h-50 w-50  btn-accent" />
+        <button
+          onClick={() => {
+            setshowLogoutModal(true);
+          }}
+          className="btn  h-50 w-50 "
+        >
+          Logout
+        </button>
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          className="w-50 h-50  btn btn-error"
+        >
+          Delete Account
+        </button>
+      </div>
+
       {showLogoutModal && (
         <Modal
           title="Confirm Logout"
@@ -65,12 +76,6 @@ export default function Settings() {
         ></Modal>
       )}
 
-      <button
-        onClick={() => setShowDeleteModal(true)}
-        className="w-full bg-error text-error-content py-2 rounded-lg hover:bg-error/90"
-      >
-        Delete Account
-      </button>
       {showDeleteModal && (
         <Modal
           title="Confirm Deletion"
