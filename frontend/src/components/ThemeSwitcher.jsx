@@ -19,7 +19,7 @@ const ThemeToggle = ({ className = "", collapsed }) => {
     <button onClick={toggleTheme} className={`btn  ${className}`}>
       {theme === "dim" ? <Moon size={20} /> : <Sun size={20} />}
       {!collapsed && (
-        <span className="ml-2 hidden sm:inline">
+        <span className="ml-2 sm:inline">
           {theme === "dim" ? "Dark" : "Light"}
         </span>
       )}

@@ -42,7 +42,7 @@ export default function Settings() {
     <div className="flex min-h-full items-center justify-center">
       <div className="flex flex-col gap-10">
         <h1 className="text-center text-4xl">Settings</h1>
-        <div className="flex gap-6">
+        <div className="flex gap-6 flex-col-reverse sm:flex-row">
           <ThemeSwitcher className="h-50 w-50  btn-accent" />
           <button
             onClick={() => {
