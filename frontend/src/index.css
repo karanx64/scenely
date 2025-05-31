@@ -5,21 +5,21 @@
 
 /* just a VS code error. In actual, daisy ui is working fine*/
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box; /* Ensure padding and margin are calculated correctly */
-  font-family: "Outfit", sans-serif;
-}
 
-html, body {
-  height: 100%; /* Ensure full height for layout */
+
+html,
+body {
+  height: 100%;
+  /* Ensure full height for layout */
 }
 
 body {
-  padding: 0; /* Reset body padding */
-  margin: 0; /* Reset body margin */
-  background-color: var(--color-base-100); /* Ensure background color is applied */
+  padding: 0;
+  /* Reset body padding */
+  margin: 0;
+  /* Reset body margin */
+  background-color: var(--color-base-100);
+  /* Ensure background color is applied */
 }
 
 
@@ -29,78 +29,76 @@ body {
 
 
 @plugin "daisyui/theme" {
-    name: "dimDark";
-    default: false;
-    prefersdark: true;
-    color-scheme: "dark";
-    --color-base-100: oklch(30.857% 0.023 264.149);
-    --color-base-200: oklch(28.036% 0.019 264.182);
-    --color-base-300: oklch(26.346% 0.018 262.177);
-    --color-base-content: oklch(82.901% 0.031 222.959);
-    --color-primary: oklch(54% 0.281 293.009);
-    --color-primary-content: oklch(96% 0.003 264.542);
+  name: "dimDark";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: oklch(30.857% 0.023 264.149);
+  --color-base-200: oklch(28.036% 0.019 264.182);
+  --color-base-300: oklch(26.346% 0.018 262.177);
+  --color-base-content: oklch(82.901% 0.031 222.959);
+  --color-primary: oklch(54% 0.281 293.009);
+  --color-primary-content: oklch(96% 0.003 264.542);
 
-    --color-secondary: oklch(82% 0.12 346.018);
-    --color-secondary-content: oklch(14.675% 0.033 35.353);
-    --color-accent: oklch(92% 0.084 155.995);
-    --color-accent-content: oklch(14.845% 0.026 311.379);
-    --color-neutral: oklch(24.731% 0.02 264.094);
-    --color-neutral-content: oklch(82.901% 0.031 222.959);
-    --color-info: oklch(74% 0.16 232.661);
-    --color-info-content: oklch(17.215% 0.028 206.182);
-    --color-success: oklch(79% 0.209 151.711);
-    --color-success-content: oklch(17.234% 0.028 166.534);
-    --color-warning: oklch(82% 0.189 84.429);
-    --color-warning-content: oklch(17.232% 0.028 94.818);
-    --color-error: oklch(70% 0.191 22.216);
-    --color-error-content: oklch(16.483% 0.019 33.756);
-    --radius-selector: 1rem;
-    --radius-field: 1rem;
-    --radius-box: 1rem;
-    --size-selector: 0.25rem;
-    --size-field: 0.25rem;
-    --border: 2px;
-    --depth: 0;
-    --noise: 0;
+  --color-secondary: oklch(82% 0.12 346.018);
+  --color-secondary-content: oklch(14.675% 0.033 35.353);
+  --color-accent: oklch(92% 0.084 155.995);
+  --color-accent-content: oklch(14.845% 0.026 311.379);
+  --color-neutral: oklch(24.731% 0.02 264.094);
+  --color-neutral-content: oklch(82.901% 0.031 222.959);
+  --color-info: oklch(74% 0.16 232.661);
+  --color-info-content: oklch(17.215% 0.028 206.182);
+  --color-success: oklch(79% 0.209 151.711);
+  --color-success-content: oklch(17.234% 0.028 166.534);
+  --color-warning: oklch(82% 0.189 84.429);
+  --color-warning-content: oklch(17.232% 0.028 94.818);
+  --color-error: oklch(70% 0.191 22.216);
+  --color-error-content: oklch(16.483% 0.019 33.756);
+  --radius-selector: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 2px;
+  --depth: 0;
+  --noise: 0;
 }
 
 
 
 
 @plugin "daisyui/theme" {
-    name: "dim";
-    default: true;
-    prefersdark: false;
-    color-scheme: "light";
-    --color-base-100: oklch(96% 0.007 247.896);
-    --color-base-200: oklch(92% 0.013 255.508);
-    --color-base-300: oklch(86% 0.022 252.894);
-    --color-base-content: oklch(55% 0.046 257.417);
-    --color-primary: oklch(54% 0.281 293.009);
-    /* --color-primary-content: oklch(17.226% 0.028 139.549); */
-    --color-primary-content: oklch(100% 0 0);
-    --color-secondary: oklch(82% 0.12 346.018);
-    --color-secondary-content: oklch(14.675% 0.033 35.353);
-    --color-accent: oklch(92% 0.084 155.995);
-    --color-accent-content: oklch(14.845% 0.026 311.379);
-    --color-neutral: oklch(37% 0.044 257.287);
-    --color-neutral-content: oklch(82.901% 0.031 222.959);
-    --color-info: oklch(74% 0.16 232.661);
-    --color-info-content: oklch(17.215% 0.028 206.182);
-    --color-success: oklch(79% 0.209 151.711);
-    --color-success-content: oklch(17.234% 0.028 166.534);
-    --color-warning: oklch(82% 0.189 84.429);
-    --color-warning-content: oklch(17.232% 0.028 94.818);
-    --color-error: oklch(70% 0.191 22.216);
-    --color-error-content: oklch(16.483% 0.019 33.756);
-    --radius-selector: 1rem;
-    --radius-field: 1rem;
-    --radius-box: 1rem;
-    --size-selector: 0.25rem;
-    --size-field: 0.25rem;
-    --border: 2px;
-    --depth: 0;
-    --noise: 0;
+  name: "dim";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(96% 0.007 247.896);
+  --color-base-200: oklch(92% 0.013 255.508);
+  --color-base-300: oklch(86% 0.022 252.894);
+  --color-base-content: oklch(55% 0.046 257.417);
+  --color-primary: oklch(54% 0.281 293.009);
+  /* --color-primary-content: oklch(17.226% 0.028 139.549); */
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(82% 0.12 346.018);
+  --color-secondary-content: oklch(14.675% 0.033 35.353);
+  --color-accent: oklch(92% 0.084 155.995);
+  --color-accent-content: oklch(14.845% 0.026 311.379);
+  --color-neutral: oklch(37% 0.044 257.287);
+  --color-neutral-content: oklch(82.901% 0.031 222.959);
+  --color-info: oklch(74% 0.16 232.661);
+  --color-info-content: oklch(17.215% 0.028 206.182);
+  --color-success: oklch(79% 0.209 151.711);
+  --color-success-content: oklch(17.234% 0.028 166.534);
+  --color-warning: oklch(82% 0.189 84.429);
+  --color-warning-content: oklch(17.232% 0.028 94.818);
+  --color-error: oklch(70% 0.191 22.216);
+  --color-error-content: oklch(16.483% 0.019 33.756);
+  --radius-selector: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 2px;
+  --depth: 0;
+  --noise: 0;
 }
-
-
