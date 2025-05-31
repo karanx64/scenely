@@ -46,12 +46,28 @@ export default function Sidebar() {
         {/* Navigation */}
         <div>
           <nav className="flex flex-col flex-1">
-            {navItems.map(({ to, icon, label }) => (
+            {/* {navItems.map(({ to, icon, label }) => (
               <NavLink
                 key={to}
                 to={to}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${
+                    isActive
+                      ? "bg-primary text-primary-content"
+                      : "hover:bg-secondary/50"
+                  }`
+                }
+              >
+                <div className="">{icon}</div>
+                {!collapsed && <span>{label}</span>}
+              </NavLink>
+            ))} */}
+            {navItems.map(({ to, icon, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `inline-flex items-center justify-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20  ${
                     isActive
                       ? "bg-primary text-primary-content"
                       : "hover:bg-secondary/50"
