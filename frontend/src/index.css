@@ -6,11 +6,20 @@
 /* just a VS code error. In actual, daisy ui is working fine*/
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Outfit", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* Ensure padding and margin are calculated correctly */
+  font-family: "Outfit", sans-serif;
+}
 
+html, body {
+  height: 100%; /* Ensure full height for layout */
+}
+
+body {
+  padding: 0; /* Reset body padding */
+  margin: 0; /* Reset body margin */
+  background-color: var(--color-base-100); /* Ensure background color is applied */
 }
 
 

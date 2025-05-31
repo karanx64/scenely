@@ -38,8 +38,8 @@ export default function Settings() {
   };
 
   return (
-    <main className="p-4 space-y-4">
-      <h1 className="text-xl font-semibold mb-2 text-base-content">Settings</h1>
+    <main className="p-20 space-y-20">
+      <h1 className="text-3xl text-center font-semibold mb-20 text-base-content">Settings</h1>
       <ThemeSwitcher />
       <button
         onClick={() => {
