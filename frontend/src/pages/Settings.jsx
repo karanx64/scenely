@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import Modal from "../components/Modal";
 import { useState } from "react";
 import ThemeSwitcher from "../components/ThemeSwitcher";
+import { UserMinus, LogOut } from "lucide-react";
 
 export default function Settings() {
   const [error, setError] = useState("");
@@ -38,28 +39,28 @@ export default function Settings() {
   };
 
   return (
-    <main className="p-20 space-y-20">
-      <h1 className="text-3xl text-center font-semibold mb-20 text-base-content">
-        Settings
-      </h1>
-      <div className="sm:flex-col md:flex-row min-h-screen flex items-center justify-center gap-6">
-        <ThemeSwitcher className="h-50 w-50  btn-accent" />
-        <button
-          onClick={() => {
-            setshowLogoutModal(true);
-          }}
-          className="btn  h-50 w-50 "
-        >
-          Logout
-        </button>
-        <button
-          onClick={() => setShowDeleteModal(true)}
-          className="w-50 h-50  btn btn-error"
-        >
-          Delete Account
-        </button>
+    <div className="flex min-h-full items-center justify-center">
+      <div className="flex flex-col gap-10">
+        <h1 className="text-center text-4xl">Settings</h1>
+        <div className="flex gap-6">
+          <ThemeSwitcher className="h-50 w-50  btn-accent" />
+          <button
+            onClick={() => {
+              setshowLogoutModal(true);
+            }}
+            className="btn  h-50 w-50 "
+          >
+            <LogOut size={20} /> Logout
+          </button>
+          <button
+            onClick={() => setShowDeleteModal(true)}
+            className="w-50 h-50  btn btn-error"
+          >
+            <UserMinus size={20} />
+            Delete Account
+          </button>
+        </div>
       </div>
-
       {showLogoutModal && (
         <Modal
           title="Confirm Logout"
@@ -93,6 +94,6 @@ export default function Settings() {
           {error && <p className="text-error mt-2">{error}</p>}
         </Modal>
       )}
-    </main>
+    </div>
   );
 }
