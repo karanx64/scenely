@@ -27,14 +27,14 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="hidden md:flex h-screen bg-base-100 text-base-content shadow-md sticky top-0 left-0">
+    <div className="hidden md:flex h-screen bg-base-100 text-base-content shadow-md sticky top-0 left-0 ">
       <div
-        className={`flex flex-col justify-evenly ${
+        className={`flex flex-col justify-evenly overflow-y-auto ${
           collapsed ? "w-20" : "w-60"
         } transition-all duration-300`}
       >
         {/* Logo */}
-        <div className="h-20 flex items-center justify-center">
+        <div className="h-20 flex items-center justify-center btn focus:bg-transparent hover:bg-transparent bg-transparent border-none ">
           <NavLink to="/" className="flex items-center">
             <img src={Scenely} alt="Scenely Logo" width={50} />
             {!collapsed && (
@@ -45,7 +45,7 @@ export default function Sidebar() {
 
         {/* Navigation */}
         <div>
-          <nav className="flex flex-col flex-1">
+          <nav className="flex flex-col flex-">
             {/* {navItems.map(({ to, icon, label }) => (
               <NavLink
                 key={to}
