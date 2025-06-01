@@ -87,7 +87,7 @@ export default function MessageThread({
         )}
         <span>{recipientInfo?.username || "Conversation"}</span>
       </div>
-      <div className="flex-1 overflow-y-auto px-2 space-y-2">
+      <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {messages.map((msg) => {
           const isMine =
             (msg.sender && msg.sender._id === currentUserId) ||
