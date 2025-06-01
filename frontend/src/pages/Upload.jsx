@@ -16,7 +16,7 @@ const UploadPage = () => {
         </button>
       </div>
 
-      <div className="bg-base-100 p-4 rounded-lg shadow-md">
+      <div className="bg-base-100 p-4 rounded-lg shadow-md mt-2">
         <UploadForm />
       </div>
     </div>

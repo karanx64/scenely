@@ -220,7 +220,7 @@ export default function UploadForm() {
           multiple
           accept="image/*"
           onChange={handleFiles}
-          className="file-input file-input-bordered w-full"
+          className="file-input w-full p-0"
         />
       )}
 
