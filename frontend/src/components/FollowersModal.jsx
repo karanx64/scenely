@@ -21,7 +21,7 @@ export default function FollowersModal({ userId, type, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-base-content/20 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-base-100 text-base-content p-6 rounded-xl shadow-lg w-96 max-h-[80vh] overflow-y-auto relative ring-1 ring-base-300">
+      <div className="bg-base-100 text-base-content p-6 rounded-xl shadow-lg w-72 max-h-[80vh] md:w-96 overflow-y-auto relative ring-1 ring-base-300">
         <h2 className="text-xl font-bold mb-4 capitalize">{type}</h2>
 
         <button
