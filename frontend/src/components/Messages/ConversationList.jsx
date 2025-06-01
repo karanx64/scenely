@@ -1,6 +1,6 @@
 // components/messages/ConversationList.jsx
 import { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Delete } from "lucide-react";
 
 function SearchUsers({ onUserSelect }) {
   const [query, setQuery] = useState("");
@@ -39,23 +39,23 @@ function SearchUsers({ onUserSelect }) {
   return (
     <div className="flex justify-center p-4 flex-col align-middle">
       <div className="p-2">
-        <form onSubmit={handleSearch} className="input-group">
-          <button type="submit" className="btn btn-primary">
-            <Search size={20} className="text-primary-content" />
-          </button>
+        <form onSubmit={handleSearch} className="flex">
           <input
             type="text"
             placeholder="Search users by name..."
-            className="input input-bordered flex-1"
+            className="input input-bordered flex-1 rounded-r-none border-r-0"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
           <button
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-secondary rounded-none"
             onClick={clearResults}
           >
-            Clear
+            <Delete size={20} />
+          </button>
+          <button type="submit" className="btn btn-primary rounded-l-none">
+            <Search size={20} className="text-primary-content" />
           </button>
         </form>
       </div>
@@ -220,10 +220,10 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
               if (!participant) return null;
 
               return (
-                <li key={conv._id} className="flex items-center gap-2">
+                <li key={conv._id} className="flex items-center">
                   <button
                     onClick={() => onSelect(participant._id, participant)}
-                    className={`flex-1 text-left px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                    className={`flex-1 text-left px-4 py-2 rounded-3xl rounded-r-none focus:outline-none focus:ring-2 focus:ring-primary ${
                       isSelected
                         ? "bg-primary text-primary-content font-bold" // Used specific purple
                         : "bg-primary text-primary-content font-bold" // Adjusted hover for light background, text color
@@ -233,7 +233,7 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
                   </button>
                   <button
                     onClick={() => handleDeleteConversation(participant._id)}
-                    className="btn bg-red-500 hover:bg-red-600 text-white btn-sm border-none" // Adjusted delete button
+                    className="btn bg-error hover:bg-error text-primary-content btn-sm border-none rounded-l-none ring-4 ring-error" // Adjusted delete button
                   >
                     Delete
                   </button>

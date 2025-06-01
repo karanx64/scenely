@@ -33,7 +33,7 @@ export default function Home() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold text-base-content mb-4">Home</h1>
+      <h1 className="text-center text-4xl mb-6">Home</h1>
       {loading ? (
         <div className="text-base-content/70 text-center py-4">Loading...</div>
       ) : (

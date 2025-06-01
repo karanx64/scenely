@@ -1,6 +1,7 @@
 // src/components/SearchUsers.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Delete, Search } from "lucide-react";
 
 export default function SearchUsers() {
   const [query, setQuery] = useState("");
@@ -48,19 +49,19 @@ export default function SearchUsers() {
         <input
           type="text"
           placeholder="Search users by name..."
-          className="input input-bordered flex-1"
+          className="input input-bordered flex-1 rounded-r-none"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button
           type="button"
-          className="btn btn-secondary"
+          className="btn btn-secondary rounded-none"
           onClick={clearResults}
         >
-          Clear
+          <Delete size={20} />
         </button>
-        <button type="submit" className="btn btn-primary">
-          Search
+        <button type="submit" className="btn btn-primary rounded-l-none">
+          <Search size={20} />
         </button>
       </form>
 

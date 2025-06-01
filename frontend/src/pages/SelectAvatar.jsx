@@ -82,6 +82,10 @@ export default function SelectAvatar() {
     }
   };
 
+  const goBackToProfile = () => {
+    navigate("/profile");
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 text-base-content p-4">
       <div className="bg-base-200 rounded-box shadow-md w-full max-w-md p-6 space-y-4">
@@ -128,6 +132,12 @@ export default function SelectAvatar() {
           className="btn btn-primary w-full"
         >
           {uploading ? "Uploading..." : "Save and Continue"}
+        </button>
+        <button
+          className="btn btn-error w-full"
+          onClick={() => goBackToProfile()}
+        >
+          Go Back
         </button>
       </div>
     </div>
