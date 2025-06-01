@@ -13,17 +13,17 @@ export default function ExploreMosaic({ posts }) {
   return (
     <Masonry
       breakpointCols={breakpointColumns}
-      className="flex w-auto gap-5"
-      columnClassName="flex flex-col gap-5"
+      className="flex gap-1"
+      columnClassName="flex flex-col gap-1"
     >
       {posts.map((post, postIndex) => {
         const currentImage = post.imageUrls[0];
-        const randomHeight = Math.floor(Math.random() * 50) + 300; // 200–300px
+        const randomHeight = Math.floor(Math.random() * 10) + 300;
 
         return (
           <div
             key={post._id}
-            className="relative bg-black overflow-hidden cursor-pointer "
+            className="relative bg-black overflow-hidden cursor-pointer"
             style={{ height: `${randomHeight}px` }}
           >
             <img
