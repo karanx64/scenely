@@ -223,7 +223,7 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
                 <li key={conv._id} className="flex items-center">
                   <button
                     onClick={() => onSelect(participant._id, participant)}
-                    className={`flex-1 text-left px-4 py-2 rounded-3xl rounded-r-none focus:outline-none focus:ring-2 focus:ring-primary ${
+                    className={`flex-1 text-left px-4 py-2 rounded-3xl focus:outline-none focus:ring-2 focus:ring-primary ${
                       isSelected
                         ? "bg-primary text-primary-content font-bold" // Used specific purple
                         : "bg-primary text-primary-content font-bold" // Adjusted hover for light background, text color
@@ -231,12 +231,13 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
                   >
                     <p className="font-medium">{participant.username}</p>
                   </button>
-                  <button
+
+                  {/* <button
                     onClick={() => handleDeleteConversation(participant._id)}
                     className="btn bg-error hover:bg-error text-primary-content btn-sm border-none rounded-l-none ring-4 ring-error" // Adjusted delete button
                   >
                     Delete
-                  </button>
+                  </button> */}
                 </li>
               );
             })}
