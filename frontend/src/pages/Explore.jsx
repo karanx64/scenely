@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 const API_URL = import.meta.env.VITE_API_URL;
 import SearchUsers from "../components/SearchUsers";
+import { ArrowUpFromLine } from "lucide-react";
 
 export default function Explore() {
   const [posts, setPosts] = useState([]);
@@ -18,9 +19,7 @@ export default function Explore() {
 
   return (
     <div className="p-4">
-      <h1 className="text-4xl mb-4 text-base-content text-center">
-        Explore
-      </h1>
+      <h1 className="text-4xl mb-4 text-base-content text-center">Explore</h1>
       <SearchUsers />
 
       {loading ? (
@@ -30,6 +29,13 @@ export default function Explore() {
       ) : (
         <p className="text-base-content/70">No posts available.</p>
       )}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-4 right-4 z-50 btn btn-primary flex gap-2 items-center"
+      >
+        <ArrowUpFromLine size={20} className="inline" />
+        Go to Top
+      </button>
     </div>
   );
 }

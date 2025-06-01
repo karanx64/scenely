@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
+import { ArrowUpFromLine } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -39,6 +40,13 @@ export default function Home() {
       ) : (
         <PostList posts={posts} setPosts={setPosts} />
       )}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-4 right-4 z-50 btn btn-primary flex gap-2 items-center"
+      >
+        <ArrowUpFromLine size={20} className="inline" />
+        Go to Top
+      </button>
     </div>
   );
 }

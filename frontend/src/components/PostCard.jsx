@@ -169,7 +169,7 @@ export default function PostCard({ post }) {
   return (
     <div className="card w-full bg-base-100 shadow-md rounded-2xl">
       <div
-        className="relative aspect-square bg-black overflow-visible rounded-2xl rounded-b-none"
+        className={`relative aspect-square bg-black overflow-visible rounded-2xl rounded-b-none`}
         onTouchStart={(e) => (startX = e.touches[0].clientX)}
         onTouchEnd={handleSwipe}
       >

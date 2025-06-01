@@ -3,6 +3,7 @@ import PostList from "../components/PostList";
 import UserAvatar from "../components/UserAvatar"; // add this at the top
 import FollowersModal from "../components/FollowersModal";
 import { BookUser, HeartHandshake } from "lucide-react";
+import { ArrowUpFromLine } from "lucide-react";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -109,6 +110,13 @@ export default function Profile() {
 
       <h2 className="text-xl font-semibold mb-2 text-center">My Posts</h2>
       <PostList posts={posts} setPosts={setPosts} />
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed bottom-4 right-4 z-50 btn btn-primary flex gap-2 items-center"
+      >
+        <ArrowUpFromLine size={20} className="inline" />
+        Go to Top
+      </button>
     </div>
   );
 }
