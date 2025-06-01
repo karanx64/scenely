@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 import FollowersModal from "../components/FollowersModal";
-import { ArrowUpFromLine } from "lucide-react";
+import { ArrowUpFromLine, BookUser, HeartHandshake } from "lucide-react";
 
 export default function UserProfile() {
   const { userId } = useParams();
@@ -91,7 +91,7 @@ export default function UserProfile() {
     <div className="p-4 text-text">
       {error && <p className="text-error mb-4">{error}</p>}
 
-      {user && (
+      {/* {user && (
         <section className="mb-6">
           {user.avatar ? (
             <img
@@ -152,9 +152,82 @@ export default function UserProfile() {
             </div>
           )}
         </section>
+      )} */}
+      {user && (
+        <div className="mb-6 flex items-center justify-between p-3 rounded-2xl gap-6 bg-base-200 shadow-lg">
+          <div className="bg-base-300 rounded-2xl flex flex-col items-center p-3">
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Avatar"
+                className="w-24 h-24 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-3xl font-bold text-white">
+                {user.username?.[0]?.toUpperCase() || "?"}
+              </div>
+            )}
+            <div className="flex flex-col justify-between items-center pt-2">
+              <p className="font-bold">{user.username}</p>
+              <p>{user.email}</p>
+            </div>
+          </div>
+
+          <div className="flex-1 justify-evenly p-2 flex items-center">
+            <div className="flex justify-evenly items-center flex-col gap-6">
+              <p
+                className="cursor-pointer text-primary gap-2 flex items-center"
+                onClick={() => setShowModal("followers")}
+              >
+                <BookUser size={20} className="inline" />
+                <span className="font-semibold hidden sm:inline">
+                  Followers
+                </span>
+                {followersCount}
+              </p>
+              <p
+                className="cursor-pointer text-primary gap-2 flex items-center"
+                onClick={() => setShowModal("following")}
+              >
+                <HeartHandshake size={20} className="inline" />
+                <span className="font-semibold">Following</span>
+                {followingCount}
+              </p>
+            </div>
+          </div>
+
+          {currentUserId && currentUserId !== user._id && (
+            <div className="flex flex-col gap-2 items-center">
+              <button
+                onClick={handleFollowToggle}
+                className={`px-4 py-2 rounded ${
+                  isFollowing ? "bg-red-500" : "bg-blue-500"
+                } text-white w-full`}
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </button>
+              <button
+                onClick={() =>
+                  (window.location.href = `/messages?user=${user._id}`)
+                }
+                className="px-4 py-2 rounded bg-green-500 text-white w-full"
+              >
+                Message
+              </button>
+            </div>
+          )}
+
+          {showModal && (
+            <FollowersModal
+              userId={user._id}
+              type={showModal}
+              onClose={() => setShowModal(null)}
+            />
+          )}
+        </div>
       )}
 
-      <h2 className="text-xl font-semibold mb-2">Posts</h2>
+      <h2 className="text-xl font-semibold mb-2 text-center">Posts</h2>
       <PostList posts={posts} setPosts={setPosts} />
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
