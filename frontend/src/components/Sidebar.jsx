@@ -29,7 +29,7 @@ export default function Sidebar() {
   return (
     <div className="hidden md:flex h-screen bg-base-100 text-base-content shadow-md sticky top-0 left-0 ">
       <div
-        className={`flex flex-col justify-evenly overflow-y-auto ${
+        className={`flex flex-col justify-evenly overflow-y-auto overflow-x-hidden ${
           collapsed ? "w-20" : "w-60"
         } transition-all duration-300`}
         style={{ height: "100vh" }} // Enforce consistent height
@@ -47,43 +47,47 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex flex-col flex-1">
-          {navItems.map(({ to, icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `inline-flex items-center justify-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${
-                  isActive
-                    ? "bg-primary text-primary-content"
-                    : "hover:bg-secondary/50"
-                }`
-              }
-            >
-              <div className="">{icon}</div>
-              {!collapsed && <span className="whitespace-nowrap">{label}</span>}
-            </NavLink>
-          ))}
-          {/* Buttons */}
-          <div className="flex flex-col">
-            <button
-              onClick={() => setCollapsed(!collapsed)}
-              className="btn btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
-            >
-              {!collapsed ? (
-                <>
-                  <ArrowLeftFromLine size={20} /> <p>Collapse</p>
-                </>
-              ) : (
-                <ArrowRightFromLine size={20} />
-              )}
-            </button>
-            <ThemeSwitcher
-              className="btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
-              collapsed={collapsed}
-            />
-          </div>
-        </nav>
+        <div>
+          <nav className="flex flex-col flex-1">
+            {navItems.map(({ to, icon, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `inline-flex items-center justify-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${
+                    isActive
+                      ? "bg-primary text-primary-content"
+                      : "hover:bg-secondary/50"
+                  }`
+                }
+              >
+                <div className="">{icon}</div>
+                {!collapsed && (
+                  <span className="whitespace-nowrap">{label}</span>
+                )}
+              </NavLink>
+            ))}
+            {/* Buttons */}
+            <div className="flex flex-col">
+              <button
+                onClick={() => setCollapsed(!collapsed)}
+                className="btn btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
+              >
+                {!collapsed ? (
+                  <>
+                    <ArrowLeftFromLine size={20} /> <p>Collapse</p>
+                  </>
+                ) : (
+                  <ArrowRightFromLine size={20} />
+                )}
+              </button>
+              <ThemeSwitcher
+                className="btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
+                collapsed={collapsed}
+              />
+            </div>
+          </nav>
+        </div>
       </div>
     </div>
   );
