@@ -1,6 +1,15 @@
 // components/PostCard.jsx
 import { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Popcorn } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Popcorn,
+  TvMinimalPlay,
+  HeartPlus,
+  Eye,
+  Share,
+  Trash2,
+} from "lucide-react";
 import axios from "axios";
 import SharePostModal from "./SharePostModal";
 import Modal from "./Modal";
@@ -18,7 +27,7 @@ export default function PostCard({ post }) {
 
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
   const [viewsCount, setViewsCount] = useState(post.views?.length || 0);
-
+  const [liked, setLiked] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -158,82 +167,100 @@ export default function PostCard({ post }) {
   };
 
   return (
-    <div className="card w-full bg-base-100 shadow-md">
+    <div className="card w-full bg-base-100 shadow-md rounded-2xl">
       <div
-        className="relative aspect-square bg-black overflow-visible"
+        className="relative aspect-square bg-black overflow-visible rounded-2xl rounded-b-none"
         onTouchStart={(e) => (startX = e.touches[0].clientX)}
         onTouchEnd={handleSwipe}
       >
+        <div className="absolute  top-0 left-0 z-15 flex items-center text-white/20 cursor-default hover:text-white/80 transition-all duration-300">
+          {post.emoji && <p className="text-xl  ">{post.emoji}</p>}
+          {post.media.type === "movie" && (
+            <Popcorn size={20} className="inline" />
+          )}
+          {post.media.type === "tv" && (
+            <TvMinimalPlay size={20} className="inline" />
+          )}
+        </div>
+
         {images.map((img, i) => (
           <img
             key={i}
             src={img}
             alt={`Post ${i}`}
-            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${
+            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 rounded-2xl ${
               i === index ? "opacity-100 z-10" : "opacity-0 z-0"
             }`}
           />
         ))}
-      </div>
 
-      <div className="card-body p-4">
-        {post.media?.title && (
-          <p className="text-sm text-base-content/60 inline-flex gap-1 justify-center">
-            {post.media.type === "movie" && (
-              <Popcorn size={20} className="inline" />
-            )}
-            {post.media.type === "tv" && (
-              <Popcorn size={20} className="inline" />
-            )}
-            {post.media.title}
-            {post.media.year && ` (${post.media.year})`}{" "}
-            {/* Correctly display year in brackets */}
-          </p>
-        )}
         {images.length > 1 && (
-          <div className="flex justify-center gap-4 mb-2">
-            <button onClick={prev} className="btn btn-sm btn-outline">
-              <ChevronLeft size={16} /> Prev
+          <div className="flex justify-evenly  absolute  bottom-0 z-15 w-full p-1 text-primary-content/50 ">
+            <button onClick={prev} className="rounded-4xl border-1">
+              <ChevronLeft size={16} />
             </button>
-            <button onClick={next} className="btn btn-sm btn-outline">
-              Next <ChevronRight size={16} />
+
+            <button onClick={next} className="rounded-4xl border-1">
+              <ChevronRight size={16} />
             </button>
           </div>
         )}
+      </div>
 
-        {post.caption && <p>{post.caption}</p>}
-        {post.emoji && <p className="text-2xl">{post.emoji}</p>}
+      <div className="card-body p-2">
+        {post.caption && <p className="-mt-2">{post.caption}</p>}
 
-        <div className="flex justify-between items-center text-sm mt-2">
-          <button
-            onClick={handleLike}
-            className={`text-error hover:underline ${
+        <div className="flex ">
+          {post.media?.title && (
+            <p className="text-sm text-base-content/60 inline-flex justify-center">
+              {post.media.title}
+              {post.media.year && ` (${post.media.year})`}{" "}
+              {/* Correctly display year in brackets */}
+            </p>
+          )}
+        </div>
+
+        <div className="flex justify-between items-center text-sm mt-5 relative bottom-0">
+          <span
+            onClick={() => {
+              handleLike();
+              setLiked((prev) => !prev);
+            }}
+            className={`text-base-content/60 flex items-center gap-1 ${
               likeLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={likeLoading} // Disable button while loading
           >
-            ❤️ Like ({likesCount})
-          </button>
-          <span className="text-base-content/60">{viewsCount} views</span>
+            <span className="text-base-content/60 flex items-center gap-1">
+              {likesCount}
+              <HeartPlus
+                size={20}
+                className={`text-base-content/60 ${
+                  liked ? "text-red-500" : ""
+                }`}
+              />
+            </span>
+          </span>
+
+          <span className="text-base-content/60 flex items-center gap-1">
+            <Share size={20} className="inline" onClick={setShowShareModal} />
+          </span>
+
+          <span className="text-base-content/60 flex items-center gap-1">
+            {viewsCount} <Eye size={20} className="inline" />
+          </span>
         </div>
 
-        {currentUserId === post.userId._id && (
-          <button
-            className="btn btn-error btn-sm mt-2"
-            onClick={() => setShowDeleteModal(true)}
-          >
-            Delete Post
-          </button>
-        )}
-
-        <div className="flex gap-4 mt-2">
-          <button
-            onClick={() => setShowShareModal(true)}
-            className="btn btn-outline btn-primary btn-sm"
-          >
-            Share
-          </button>
-        </div>
+        {/* show delete button only on profile page */}
+        {location.pathname === "/profile" &&
+          currentUserId === post.userId._id && (
+            <button
+              className="btn btn-error btn-sm mt-2"
+              onClick={() => setShowDeleteModal(true)}
+            >
+              <Trash2 size={20} />
+            </button>
+          )}
 
         {showShareModal && (
           <SharePostModal
