@@ -54,7 +54,7 @@ export default function Settings() {
           </button>
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="w-50 h-50  btn bg-red-200 border-transparent hover:bg-red-400/70 shadow-lg text-base-content"
+            className="w-50 h-50  btn btn-error  shadow-lg "
           >
             <UserMinus size={20} />
             Delete Account

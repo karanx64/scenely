@@ -62,7 +62,12 @@ export default function Profile() {
       {user && (
         <div className="mb-6 flex items-center justify-between  p-3 rounded-2xl gap-6 bg-base-200 shadow-lg">
           <div className="bg-base-300 rounded-2xl flex flex-col items-center p-3">
-            <UserAvatar size={96} clickable={true} showTooltip={false} className="cursor-alias"/>
+            <UserAvatar
+              size={96}
+              clickable={true}
+              showTooltip={false}
+              className="cursor-alias"
+            />
             <div className="flex flex-col justify-between items-center pt-2">
               <p className="font-bold">{user.username}</p>
               <p>{user.email}</p>
@@ -102,7 +107,7 @@ export default function Profile() {
         </div>
       )}
 
-      <h2 className="text-xl font-semibold mb-2">My Posts</h2>
+      <h2 className="text-xl font-semibold mb-2 text-center">My Posts</h2>
       <PostList posts={posts} setPosts={setPosts} />
     </div>
   );

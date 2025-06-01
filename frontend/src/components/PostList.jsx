@@ -18,7 +18,7 @@ function PostList({ posts, setPosts }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 bg-base-100 text-base-content">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 bg-base-100 text-base-content">
       {posts.map((post) => (
         <PostCard key={post._id} post={post} />
       ))}
