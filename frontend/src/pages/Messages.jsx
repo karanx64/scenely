@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ConversationList from "../components/Messages/ConversationList";
 import MessageThread from "../components/Messages/MessageThread";
+import { MoveDownLeft } from "lucide-react";
 
 export default function Messages() {
   const [recipientId, setRecipientId] = useState(null);
@@ -75,10 +76,10 @@ export default function Messages() {
           <>
             {/* Back button for small screens */}
             <button
-              className="btn btn-outline mb-4 sm:hidden w-full"
+              className=" sm:hidden top-[45%] fixed hover:-left-5 -left-10 z-101 btn btn-primary  btn-lg opacity-40 hover:opacity-100 transition-all duration-200"
               onClick={() => setShowThread(false)}
             >
-              Back
+              <MoveDownLeft size={20} className="ml-5 -mr-4 " />
             </button>
             <MessageThread
               currentUserId={currentUserId}

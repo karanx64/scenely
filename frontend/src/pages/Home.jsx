@@ -42,10 +42,10 @@ export default function Home() {
       )}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-4 right-4 z-50 btn btn-primary flex gap-2 items-center"
+        className="fixed md:bottom-4 right-4 bottom-20 z-50 btn btn-primary flex gap-2 items-center"
       >
         <ArrowUpFromLine size={20} className="inline" />
-        Go to Top
+        <span className="hidden md:block">Go to top</span>
       </button>
     </div>
   );

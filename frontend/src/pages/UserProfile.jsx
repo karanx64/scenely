@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 import FollowersModal from "../components/FollowersModal";
+import { ArrowUpFromLine } from "lucide-react";
 
 export default function UserProfile() {
   const { userId } = useParams();
@@ -155,6 +156,13 @@ export default function UserProfile() {
 
       <h2 className="text-xl font-semibold mb-2">Posts</h2>
       <PostList posts={posts} setPosts={setPosts} />
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="fixed md:bottom-4 right-4 bottom-20 z-50 btn btn-primary flex gap-2 items-center"
+      >
+        <ArrowUpFromLine size={20} className="inline" />
+        <span className="hidden md:block">Go to top</span>
+      </button>
     </div>
   );
 }
