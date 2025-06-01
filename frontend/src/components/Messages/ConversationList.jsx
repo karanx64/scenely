@@ -131,7 +131,7 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ recipientId: user._id, text: "" }),
+        body: JSON.stringify({ recipientId: user._id, text: "Hello" }),
       });
       if (!res.ok) throw new Error("Failed to start conversation");
       // Assuming a conversation is returned or a new one is created on the backend
