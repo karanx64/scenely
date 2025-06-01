@@ -207,9 +207,7 @@ export default function PostCard({ post }) {
         )}
       </div>
 
-      <div className="card-body p-2">
-        {post.caption && <p className="-mt-2">{post.caption}</p>}
-
+      <div className="card-body p-1">
         <div className="flex ">
           {post.media?.title && (
             <p className="text-sm text-base-content/60 inline-flex justify-center">
@@ -220,7 +218,7 @@ export default function PostCard({ post }) {
           )}
         </div>
 
-        <div className="flex justify-between items-center text-sm mt-5 relative bottom-0">
+        <div className="flex justify-between items-center text-sm mt-0 relative bottom-0">
           <span
             onClick={() => {
               handleLike();
@@ -251,11 +249,13 @@ export default function PostCard({ post }) {
           </span>
         </div>
 
+        {post.caption && <p>{post.caption}</p>}
+
         {/* show delete button only on profile page */}
         {location.pathname === "/profile" &&
           currentUserId === post.userId._id && (
             <button
-              className="btn btn-error btn-sm mt-2"
+              className="btn btn-error btn-xs rounded-none rounded-bl-lg  top-0 z-15 right-0 absolute"
               onClick={() => setShowDeleteModal(true)}
             >
               <Trash2 size={20} />
