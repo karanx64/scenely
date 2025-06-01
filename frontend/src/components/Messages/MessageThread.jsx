@@ -109,16 +109,19 @@ export default function MessageThread({
         })}
       </div>
 
-      <div className="flex gap-2 mt-2">
+      <div className="sticky bottom-0 z-10 bg-base-100 p-2 flex">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="input input-bordered w-full"
+          className="input input-bordered w-full rounded-r-none"
           onKeyDown={(e) => {
             if (e.key === "Enter") sendMessage();
           }}
         />
-        <button onClick={sendMessage} className="btn btn-primary">
+        <button
+          onClick={sendMessage}
+          className="btn btn-primary rounded-l-none"
+        >
           Send
         </button>
       </div>
