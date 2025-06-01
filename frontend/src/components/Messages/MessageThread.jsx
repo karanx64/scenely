@@ -77,18 +77,17 @@ export default function MessageThread({
 
   return (
     <div className="flex flex-col h-full">
+      <div className=" text-lg font-bold border-b border-base-300 bg-base-100  flex items-center gap-2 z-100 w-full">
+        {recipientInfo?.avatar && (
+          <img
+            src={recipientInfo.avatar}
+            alt={recipientInfo.username}
+            className="w-8 h-8 rounded-full object-cover"
+          />
+        )}
+        <span>{recipientInfo?.username || "Conversation"}</span>
+      </div>
       <div className="flex-1 overflow-y-auto px-2 space-y-2">
-        <div className="px-2 py-1 text-lg font-bold border-b border-base-300 bg-base-100 sticky top-0 z-10 flex items-center gap-2">
-          {recipientInfo?.avatar && (
-            <img
-              src={recipientInfo.avatar}
-              alt={recipientInfo.username}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          )}
-          <span>{recipientInfo?.username || "Conversation"}</span>
-        </div>
-
         {messages.map((msg) => {
           const isMine =
             (msg.sender && msg.sender._id === currentUserId) ||
@@ -109,7 +108,7 @@ export default function MessageThread({
         })}
       </div>
 
-      <div className="sticky bottom-0 z-10 bg-base-100 p-2 flex">
+      <div className="sticky bottom-0 z-10 bg-base-100 p-2 flex mt-10">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}

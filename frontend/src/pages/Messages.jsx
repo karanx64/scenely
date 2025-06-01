@@ -75,7 +75,7 @@ export default function Messages() {
           <>
             {/* Back button for small screens */}
             <button
-              className="btn btn-outline mb-4 sm:hidden"
+              className="btn btn-outline mb-4 sm:hidden w-full"
               onClick={() => setShowThread(false)}
             >
               Back
