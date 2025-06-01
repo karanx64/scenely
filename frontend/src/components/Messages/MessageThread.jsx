@@ -95,9 +95,9 @@ export default function MessageThread({
           return (
             <div
               key={msg._id}
-              className={`max-w-xs px-3 py-2 rounded-lg ${
+              className={`max-w-xs px-3 py-2 rounded-2xl ${
                 isMine
-                  ? "ml-auto bg-primary text-primary-content"
+                  ? "ml-auto bg-primary text-primary-content "
                   : "mr-auto bg-base-200 text-base-content"
               }`}
             >
@@ -112,14 +112,14 @@ export default function MessageThread({
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="input input-bordered w-full rounded-r-none"
+          className="input input-bordered w-full rounded-r-none border-r-0"
           onKeyDown={(e) => {
             if (e.key === "Enter") sendMessage();
           }}
         />
         <button
           onClick={sendMessage}
-          className="btn btn-primary rounded-l-none"
+          className="btn btn-primary rounded-l-none "
         >
           Send
         </button>
