@@ -1,6 +1,7 @@
 // src/pages/Explore.jsx
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
+import ExploreMosaic from "../components/ExploreMosaic";
 const API_URL = import.meta.env.VITE_API_URL;
 import SearchUsers from "../components/SearchUsers";
 import { ArrowUpFromLine } from "lucide-react";
@@ -25,7 +26,7 @@ export default function Explore() {
       {loading ? (
         <p className="text-base-content/70">Loading...</p>
       ) : posts.length > 0 ? (
-        <PostList posts={posts} setPosts={setPosts} />
+        <ExploreMosaic posts={posts} setPosts={setPosts} />
       ) : (
         <p className="text-base-content/70">No posts available.</p>
       )}
