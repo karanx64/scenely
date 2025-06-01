@@ -43,8 +43,8 @@ export default function SearchUsers() {
   };
 
   return (
-    <div className="p-4  rounded  w-full max-w-md mx-auto">
-      <form onSubmit={handleSearch} className="flex gap-2 mb-4">
+    <div className="p-4 rounded w-full max-w-md mx-auto">
+      <form onSubmit={handleSearch} className="flex mb-10">
         <input
           type="text"
           placeholder="Search users by name..."
@@ -52,6 +52,13 @@ export default function SearchUsers() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={clearResults}
+        >
+          Clear
+        </button>
         <button type="submit" className="btn btn-primary">
           Search
         </button>
@@ -60,39 +67,31 @@ export default function SearchUsers() {
       {error && <p className="text-error mb-2">{error}</p>}
 
       {results.length > 0 && (
-        <div className="mb-4">
-          <button
-            onClick={clearResults}
-            className="text-sm text-blue-600 hover:underline mb-2"
-          >
-            Clear Results
-          </button>
-          <ul className="space-y-2">
-            {results.map((user) => (
-              <li
-                key={user._id}
-                onClick={() => navigate(`/user/${user._id}`)}
-                className="flex items-center gap-3 p-2 rounded hover:bg-base-200 cursor-pointer"
-              >
-                {user.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt="avatar"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">
-                    {user.username?.[0]?.toUpperCase() || "?"}
-                  </div>
-                )}
-                <div>
-                  <p className="font-medium">{user.username}</p>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+        <ul className="space-y-2">
+          {results.map((user) => (
+            <li
+              key={user._id}
+              onClick={() => navigate(`/user/${user._id}`)}
+              className="flex items-center gap-3 p-2 rounded hover:bg-base-200 cursor-pointer"
+            >
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt="avatar"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">
+                  {user.username?.[0]?.toUpperCase() || "?"}
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+              )}
+              <div>
+                <p className="font-medium">{user.username}</p>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

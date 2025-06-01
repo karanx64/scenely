@@ -32,75 +32,58 @@ export default function Sidebar() {
         className={`flex flex-col justify-evenly overflow-y-auto ${
           collapsed ? "w-20" : "w-60"
         } transition-all duration-300`}
+        style={{ height: "100vh" }} // Enforce consistent height
       >
         {/* Logo */}
-        <div className="h-20 flex items-center justify-center btn focus:bg-transparent hover:bg-transparent bg-transparent border-none ">
+        <div className="h-20 flex items-center justify-center btn focus:bg-transparent hover:bg-transparent bg-transparent border-none">
           <NavLink to="/" className="flex items-center">
             <img src={Scenely} alt="Scenely Logo" width={50} />
             {!collapsed && (
-              <h1 className="text-5xl font-bold text-primary ">cenely</h1>
+              <h1 className="text-5xl font-bold text-primary whitespace-nowrap">
+                cenely
+              </h1>
             )}
           </NavLink>
         </div>
 
         {/* Navigation */}
-        <div>
-          <nav className="flex flex-col flex-">
-            {/* {navItems.map(({ to, icon, label }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${
-                    isActive
-                      ? "bg-primary text-primary-content"
-                      : "hover:bg-secondary/50"
-                  }`
-                }
-              >
-                <div className="">{icon}</div>
-                {!collapsed && <span>{label}</span>}
-              </NavLink>
-            ))} */}
-            {navItems.map(({ to, icon, label }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) =>
-                  `inline-flex items-center justify-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20  ${
-                    isActive
-                      ? "bg-primary text-primary-content"
-                      : "hover:bg-secondary/50"
-                  }`
-                }
-              >
-                <div className="">{icon}</div>
-                {!collapsed && <span>{label}</span>}
-              </NavLink>
-            ))}
-            {/* Buttons */}
-            <div className="flex flex-col">
-              <button
-                onClick={() => setCollapsed(!collapsed)}
-                className="btn btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
-              >
-                {!collapsed ? (
-                  <>
-                    <ArrowLeftFromLine size={20} /> <p>Collapse</p>
-                  </>
-                ) : (
-                  <>
-                    <ArrowRightFromLine size={20} />
-                  </>
-                )}
-              </button>
-              <ThemeSwitcher
-                className="btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
-                collapsed={collapsed}
-              />
-            </div>
-          </nav>
-        </div>
+        <nav className="flex flex-col flex-1">
+          {navItems.map(({ to, icon, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `inline-flex items-center justify-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${
+                  isActive
+                    ? "bg-primary text-primary-content"
+                    : "hover:bg-secondary/50"
+                }`
+              }
+            >
+              <div className="">{icon}</div>
+              {!collapsed && <span className="whitespace-nowrap">{label}</span>}
+            </NavLink>
+          ))}
+          {/* Buttons */}
+          <div className="flex flex-col">
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="btn btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
+            >
+              {!collapsed ? (
+                <>
+                  <ArrowLeftFromLine size={20} /> <p>Collapse</p>
+                </>
+              ) : (
+                <ArrowRightFromLine size={20} />
+              )}
+            </button>
+            <ThemeSwitcher
+              className="btn-ghost rounded-l-none rounded-r-4xl h-20 w-full"
+              collapsed={collapsed}
+            />
+          </div>
+        </nav>
       </div>
     </div>
   );

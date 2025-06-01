@@ -38,31 +38,31 @@ function SearchUsers({ onUserSelect }) {
 
   return (
     <div className="flex justify-center p-4 flex-col align-middle">
-      <form
-        onSubmit={handleSearch}
-        className="flex flex-row items-center w-full max-w-md space-y-2 m-auto "
-      >
-        <input
-          type="text"
-          placeholder="Search users by name..."
-          className="input input-bordered w-3/4 rounded-r-none "
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <button type="submit" className="btn btn-primary ">
-          <Search size={20} className="text-primary-content" />
-        </button>
-      </form>
+      <div className="p-2">
+        <form onSubmit={handleSearch} className="input-group">
+          <button type="submit" className="btn btn-primary">
+            <Search size={20} className="text-primary-content" />
+          </button>
+          <input
+            type="text"
+            placeholder="Search users by name..."
+            className="input input-bordered flex-1"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={clearResults}
+          >
+            Clear
+          </button>
+        </form>
+      </div>
       {error && <p className="text-red-500 mb-2">{error}</p>}{" "}
       {/* Assuming red for error */}
       {results.length > 0 && (
         <div className="mb-4">
-          <button
-            onClick={clearResults}
-            className="text-sm text-blue-600 hover:underline mb-2"
-          >
-            Clear Results
-          </button>
           <ul className="space-y-2 ">
             {results.map((user) => (
               <li
