@@ -43,18 +43,18 @@ export default function Settings() {
       <div className="flex flex-col gap-10">
         <h1 className="text-center text-4xl">Settings</h1>
         <div className="flex gap-6 flex-col-reverse sm:flex-row">
-          <ThemeSwitcher className="h-50 w-50  btn-accent" />
+          <ThemeSwitcher className="h-50 w-50  btn-accent shadow-lg" />
           <button
             onClick={() => {
               setshowLogoutModal(true);
             }}
-            className="btn  h-50 w-50 "
+            className="btn  h-50 w-50 shadow-lg"
           >
             <LogOut size={20} /> Logout
           </button>
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="w-50 h-50  btn btn-error"
+            className="w-50 h-50  btn bg-red-200 border-transparent hover:bg-red-400/70 shadow-lg text-base-content"
           >
             <UserMinus size={20} />
             Delete Account

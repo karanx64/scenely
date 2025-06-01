@@ -215,21 +215,13 @@ export default function UploadForm() {
   return (
     <div className="max-w-md mx-auto p-4 flex items-center justify-center flex-col">
       {step === "select" && (
-        <label className="flex cursor-pointer">
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFiles}
-            className="hidden"
-          />
-          <div className=" border-2 rounded-2xl rounded-r-none px-2 bg-base-200">
-            <span>Browse...</span>
-          </div>
-          <div className="border-l-0  border-2 rounded-2xl rounded-l-none px-2">
-            No files selected
-          </div>
-        </label>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFiles}
+          className="file-input file-input-bordered w-full"
+        />
       )}
 
       {step === "crop" && selectedImages.length > 0 && (

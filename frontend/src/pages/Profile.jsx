@@ -60,7 +60,7 @@ export default function Profile() {
       {error && <p className="text-error">{error}</p>}
 
       {user && (
-        <div className="mb-6 flex items-center justify-between  p-3 rounded-2xl gap-6 bg-base-200">
+        <div className="mb-6 flex items-center justify-between  p-3 rounded-2xl gap-6 bg-base-200 shadow-lg">
           <div className="bg-base-300 rounded-2xl flex flex-col items-center p-3">
             <UserAvatar size={96} clickable={true} showTooltip={false} className="cursor-alias"/>
             <div className="flex flex-col justify-between items-center pt-2">
