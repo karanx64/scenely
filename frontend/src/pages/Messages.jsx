@@ -76,7 +76,7 @@ export default function Messages() {
           <>
             {/* Back button for small screens */}
             <button
-              className=" sm:hidden top-[45%] fixed hover:-left-5 -left-10 z-101 btn btn-primary  btn-lg opacity-40 hover:opacity-100 transition-all duration-200"
+              className=" sm:hidden top-[45%] fixed hover:-left-5 active:-left-5 -left-10 z-101 btn btn-primary  btn-lg opacity-40 hover:opacity-100 active:opacity-100 transition-all duration-200"
               onClick={() => setShowThread(false)}
             >
               <MoveDownLeft size={20} className="ml-5 -mr-4 " />
