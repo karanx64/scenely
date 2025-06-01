@@ -2,7 +2,7 @@
 import {
   Home,
   Upload,
-  Compass,
+  Droplet,
   User,
   Settings,
   MessageCircle,
@@ -11,7 +11,7 @@ import { NavLink } from "react-router-dom";
 
 const navItems = [
   { to: "/settings", icon: <Settings size={20} />, label: "Settings" },
-  { to: "/explore", icon: <Compass size={20} />, label: "Explore" },
+  { to: "/explore", icon: <Droplet size={20} />, label: "Zen" },
   { to: "/upload", icon: <Upload size={20} />, label: "Upload" },
 
   { to: "/", icon: <Home size={20} />, label: "Home" },

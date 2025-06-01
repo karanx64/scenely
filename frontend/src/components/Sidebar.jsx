@@ -2,7 +2,7 @@
 import {
   Home,
   Upload,
-  Compass,
+  Droplet,
   User,
   Settings,
   MessageCircle,
@@ -11,12 +11,12 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
-import Scenely from "../../src/assets/Scenely.png";
+import scenely from "../../src/assets/Scenely.png";
 import { useState } from "react";
 
 const navItems = [
   { to: "/", icon: <Home size={20} />, label: "Home" },
-  { to: "/explore", icon: <Compass size={20} />, label: "Explore" },
+  { to: "/explore", icon: <Droplet size={20} />, label: "Zen" },
   { to: "/upload", icon: <Upload size={20} />, label: "Upload" },
   { to: "/profile", icon: <User size={20} />, label: "Profile" },
   { to: "/settings", icon: <Settings size={20} />, label: "Settings" },
@@ -37,7 +37,7 @@ export default function Sidebar() {
         {/* Logo */}
         <div className="h-20 flex items-center justify-center btn focus:bg-transparent hover:bg-transparent bg-transparent border-none">
           <NavLink to="/" className="flex items-center">
-            <img src={Scenely} alt="Scenely Logo" width={50} />
+            <img src={scenely} alt="Scenely Logo" width={50} />
             {!collapsed && (
               <h1 className="text-5xl font-bold text-primary whitespace-nowrap">
                 cenely

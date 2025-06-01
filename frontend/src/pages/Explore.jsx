@@ -20,7 +20,9 @@ export default function Explore() {
 
   return (
     <div className="p-4">
-      <h1 className="text-4xl mb-4 text-base-content text-center">Explore</h1>
+      <h1 className="text-4xl mb-4 text-base-content text-center">
+        Zen Scroll
+      </h1>
       <SearchUsers />
 
       {loading ? (
