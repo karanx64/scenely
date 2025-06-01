@@ -173,7 +173,7 @@ export default function PostCard({ post }) {
         onTouchStart={(e) => (startX = e.touches[0].clientX)}
         onTouchEnd={handleSwipe}
       >
-        <div className="absolute  top-0 left-0 z-15 flex items-center text-white/20 cursor-default hover:text-white/80 transition-all duration-300">
+        <div className="absolute  top-0 left-0 z-15 flex items-center text-white/50 cursor-default hover:text-white/80 transition-all duration-300">
           {post.emoji && <p className="text-xl  ">{post.emoji}</p>}
           {post.media.type === "movie" && (
             <Popcorn size={20} className="inline" />
