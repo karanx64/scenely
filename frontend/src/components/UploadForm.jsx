@@ -491,8 +491,11 @@ export default function UploadForm() {
 
       {step === "crop" && selectedImages.length > 0 && (
         <>
-          
-
+          {cropError && (
+            <div className="text-center text-error font-semibold py-2">
+              {cropError}
+            </div>
+          )}
           <div className="space-y-4">
             {selectedImages.length > 1 && (
               <div className="flex gap-2 pt-2 relative z-10">
@@ -532,11 +535,6 @@ export default function UploadForm() {
                 >
                   Continue
                 </button>
-              </div>
-            )}
-            {cropError && (
-              <div className="text-center text-error font-semibold py-2">
-                {cropError}
               </div>
             )}
           </div>
