@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 import UserAvatar from "../components/UserAvatar"; // add this at the top
 import FollowersModal from "../components/FollowersModal";
+import { BookUser, HeartHandshake } from "lucide-react";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -52,32 +53,44 @@ export default function Profile() {
 
   return (
     <div className="p-4 text-base-content">
-      <h1 className="text-2xl font-bold mb-4">My Profile</h1>
+      <h1 className="text-4xl mb-4 text-base-content text-center">
+        My Profile
+      </h1>
 
       {error && <p className="text-error">{error}</p>}
 
       {user && (
-        <div className="mb-6 space-y-3">
-          <UserAvatar size={96} clickable={true} showTooltip={false} />
-          <p>
-            <span className="font-semibold">Username:</span> {user.username}
-          </p>
-          <p>
-            <span className="font-semibold">Email:</span> {user.email}
-          </p>
+        <div className="mb-6 flex items-center justify-between  p-3 rounded-2xl gap-6 bg-base-200">
+          <div className="bg-base-300 rounded-2xl flex flex-col items-center p-3">
+            <UserAvatar size={96} clickable={true} showTooltip={false} className="cursor-alias"/>
+            <div className="flex flex-col justify-between items-center pt-2">
+              <p className="font-bold">{user.username}</p>
+              <p>{user.email}</p>
+            </div>
+          </div>
 
-          <p
-            className="cursor-pointer text-primary hover:underline"
-            onClick={() => setShowModal("followers")}
-          >
-            <span className="font-semibold">Followers:</span> {followersCount}
-          </p>
-          <p
-            className="cursor-pointer text-primary hover:underline"
-            onClick={() => setShowModal("following")}
-          >
-            <span className="font-semibold">Following:</span> {followingCount}
-          </p>
+          <div className="flex-1 justify-evenly p-2 flex items-center  ">
+            <div className="flex justify-evenly items-center flex-col gap-6">
+              <p
+                className="cursor-pointer text-primary gap-2 flex items-center"
+                onClick={() => setShowModal("followers")}
+              >
+                <BookUser size={20} className="inline" />
+                <span className="font-semibold hidden sm:inline">
+                  Followers
+                </span>
+                {followersCount}
+              </p>
+              <p
+                className="cursor-pointer text-primary gap-2 flex items-center"
+                onClick={() => setShowModal("following")}
+              >
+                <HeartHandshake size={20} className="inline" />
+                <span className="font-semibold">Following</span>
+                {followingCount}
+              </p>
+            </div>
+          </div>
 
           {showModal && user?._id && (
             <FollowersModal
