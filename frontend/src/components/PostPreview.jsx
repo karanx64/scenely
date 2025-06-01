@@ -100,40 +100,26 @@ export default function PostPreview({
   const imageSrc = images[currentIndex];
 
   return (
-    <div className="relative bg-black w-full min-h-[400px]">
+    <div className="relative bg-black w-full aspect-1 overflow-hidden flex items-center justify-center">
       {mode === "crop" ? (
-        <div className="h-full flex items-center justify-center">
-          {imageSrc && (
-            <div className="max-w-full max-h-[400px]">
-              <ReactCrop
-                crop={crop}
-                onChange={(c) => {
-                  console.log("Crop changed:", c);
-                  setCrop(c);
-                }}
-                onComplete={(c) => {
-                  console.log("Crop complete in PostPreview:", c);
-                  onCropComplete(c);
-                }}
-                circularCrop={false}
-                ruleOfThirds
-              >
-                <img
-                  src={imageSrc}
-                  alt="Crop preview"
-                  className="max-w-full max-h-[400px]"
-                  onLoad={(e) => {
-                    console.log(
-                      "Image loaded in PostPreview:",
-                      e.currentTarget
-                    );
-                    onImageLoaded(e.currentTarget);
-                  }}
-                />
-              </ReactCrop>
-            </div>
-          )}
-        </div>
+        imageSrc && (
+          <div className="w-full h-full">
+            <ReactCrop
+              crop={crop}
+              onChange={(c) => setCrop(c)}
+              onComplete={(c) => onCropComplete(c)}
+              circularCrop={false}
+              ruleOfThirds
+            >
+              <img
+                src={imageSrc}
+                alt="Crop preview"
+                className="w-full h-full object-contain"
+                onLoad={(e) => onImageLoaded(e.currentTarget)}
+              />
+            </ReactCrop>
+          </div>
+        )
       ) : (
         <img
           src={imageSrc}
