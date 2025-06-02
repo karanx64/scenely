@@ -285,11 +285,11 @@ export default function UploadForm() {
             mode="review"
           />
 
-          <div className="flex gap-2 pt-2 relative z-10">
-            <button className="btn btn-neutral" onClick={Prev}>
+          <div className="flex justify-between pt-2 relative z-10 mx-10">
+            <button className="btn btn-primary" onClick={Prev}>
               Previous
             </button>
-            <button className="btn btn-neutral" onClick={Next}>
+            <button className="btn btn-primary " onClick={Next}>
               Next
             </button>
           </div>
@@ -308,11 +308,26 @@ export default function UploadForm() {
             onChange={(e) => setEmoji(e.target.value)}
             className="select select-bordered w-full"
           >
-            <option value="🙂">🙂 Happy</option>
+            <option value="😀">😀 Grinning</option>
+            <option value="😂">😂 Joy</option>
             <option value="😢">😢 Sad</option>
             <option value="😡">😡 Angry</option>
             <option value="😍">😍 Love</option>
+            <option value="😎">😎 Cool</option>
+            <option value="😱">😱 Shocked</option>
+            <option value="🤔">🤔 Thinking</option>
+            <option value="😴">😴 Sleepy</option>
+            <option value="🥳">🥳 Party</option>
+            <option value="🥺">🥺 Pleading</option>
+            <option value="😇">😇 Innocent</option>
+            <option value="😤">😤 Frustrated</option>
+            <option value="🤯">🤯 Mind Blown</option>
+            <option value="🤮">🤮 Disgusted</option>
+            <option value="😬">😬 Awkward</option>
+            <option value="🤗">🤗 Hugs</option>
+            <option value="🙃">🙃 Silly</option>
             <option value="😐">😐 Neutral</option>
+            <option value="🫠">🫠 Melting</option>
           </select>
 
           <button
