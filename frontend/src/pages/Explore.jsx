@@ -5,6 +5,7 @@ import ExploreMosaic from "../components/ExploreMosaic";
 const API_URL = import.meta.env.VITE_API_URL;
 import SearchUsers from "../components/SearchUsers";
 import { ArrowUpFromLine } from "lucide-react";
+import Loader from "../components/Loader";
 
 export default function Explore() {
   const [posts, setPosts] = useState([]);
@@ -26,7 +27,9 @@ export default function Explore() {
       <SearchUsers />
 
       {loading ? (
-        <p className="text-base-content/70">Loading...</p>
+        <div className="flex justify-center py-4">
+          <Loader type="spinner" size="md" />
+        </div>
       ) : posts.length > 0 ? (
         <ExploreMosaic posts={posts} setPosts={setPosts} />
       ) : (

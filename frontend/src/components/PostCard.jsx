@@ -227,17 +227,21 @@ export default function PostCard({ post }) {
             className={`text-base-content/60 flex items-center gap-1 ${
               likeLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={likeLoading} // Disable button while loading
+            disabled={likeLoading}
           >
-            <span className="text-base-content/60 flex items-center gap-1">
-              {likesCount}
-              <HeartPlus
-                size={20}
-                className={`text-base-content/60 ${
-                  liked ? "text-red-500" : ""
-                }`}
-              />
-            </span>
+            {likeLoading ? (
+              <Loader type="spinner" size="sm" />
+            ) : (
+              <span className="text-base-content/60 flex items-center gap-1">
+                {likesCount}
+                <HeartPlus
+                  size={20}
+                  className={`text-base-content/60 ${
+                    liked ? "text-red-500" : ""
+                  }`}
+                />
+              </span>
+            )}
           </span>
 
           <span className="text-base-content/60 flex items-center gap-1">

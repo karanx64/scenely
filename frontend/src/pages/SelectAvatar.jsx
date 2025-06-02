@@ -3,6 +3,7 @@ import Cropper from "react-easy-crop";
 import getCroppedImage from "../utils/cropImage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Loader from "../components/Loader"; // Adjust the import based on your project structure
 
 export default function SelectAvatar() {
   const [image, setImage] = useState(null);
@@ -85,6 +86,8 @@ export default function SelectAvatar() {
   const goBackToProfile = () => {
     navigate("/profile");
   };
+
+  if (uploading) return <Loader type="spinner" size="md" className="m-auto" />;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 text-base-content p-4">

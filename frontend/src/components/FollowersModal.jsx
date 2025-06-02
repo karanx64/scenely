@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Loader from "./Loader"; // Adjust the import path as necessary
 
 export default function FollowersModal({ userId, type, onClose }) {
   const [users, setUsers] = useState([]);
@@ -32,7 +33,9 @@ export default function FollowersModal({ userId, type, onClose }) {
         </button>
 
         {users.length === 0 ? (
-          <p className="text-sm text-base-content/70">No {type} yet.</p>
+          <div className="flex justify-center py-4">
+            <Loader type="spinner" size="md" />
+          </div>
         ) : (
           <ul className="space-y-3">
             {users.map((user) => (

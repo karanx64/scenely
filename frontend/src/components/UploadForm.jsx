@@ -4,6 +4,7 @@ import getCroppedImg from "../utils/cropImage";
 import axios from "axios";
 import MovieSearch from "./MovieSearch";
 import Modal from "./Modal";
+import Loader from "./Loader";
 
 export default function UploadForm() {
   const [selectedImages, setSelectedImages] = useState([]);
@@ -340,9 +341,9 @@ export default function UploadForm() {
               }
               handleSubmit();
             }}
-            // disabled={uploading}
+            disabled={uploading}
           >
-            {uploading ? "Posting..." : "Post"}
+            {uploading ? <Loader type="spinner" size="sm" /> : "Post"}
           </button>
           {showMediaError && (
             <Modal

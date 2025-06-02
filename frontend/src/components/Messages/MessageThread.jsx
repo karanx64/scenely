@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import PostCard from "../PostCard";
+import Loader from "../../components/Loader"; // Adjust the import path as necessary
 
 export default function MessageThread({
   recipientId,
@@ -9,6 +10,7 @@ export default function MessageThread({
 }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
+  const [sending, setSending] = useState(false); // NEW STATE FOR LOADING
 
   // Fetch messages
   const fetchMessages = useCallback(async () => {
@@ -36,6 +38,7 @@ export default function MessageThread({
   // Send a new message
   const sendMessage = async () => {
     if (!text.trim()) return;
+    setSending(true); // SET LOADING TO TRUE
     const res = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
       method: "POST",
       headers: {
@@ -48,6 +51,7 @@ export default function MessageThread({
       }),
     });
     const newMessage = await res.json();
+    setSending(false); // SET LOADING TO FALSE
     // Ensure sender is an object for immediate styling
     const formattedMessage = {
       ...newMessage,
@@ -119,9 +123,10 @@ export default function MessageThread({
         />
         <button
           onClick={sendMessage}
-          className="btn btn-primary rounded-l-none "
+          className="btn btn-primary rounded-l-none"
+          disabled={!text.trim()}
         >
-          Send
+          {sending ? <Loader type="spinner" size="sm" /> : "Send"}
         </button>
       </div>
     </div>

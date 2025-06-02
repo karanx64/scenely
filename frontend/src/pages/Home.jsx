@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 import { ArrowUpFromLine } from "lucide-react";
+import Loader from "../components/Loader"; // Import the Loader component
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -36,7 +37,9 @@ export default function Home() {
     <div className="p-4">
       <h1 className="text-center text-4xl mb-6">Home</h1>
       {loading ? (
-        <div className="text-base-content/70 text-center py-4">Loading...</div>
+        <div className="flex justify-center py-4">
+          <Loader type="spinner" size="md" />
+        </div>
       ) : (
         <PostList posts={posts} setPosts={setPosts} />
       )}
