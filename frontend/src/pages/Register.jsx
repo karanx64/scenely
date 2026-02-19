@@ -107,10 +107,10 @@ export default function Register() {
           <p className="text-sm text-center mt-8 ">
             For guest login, <br />
             use below credentials <br />
-            user1@email.com | user1 <br />
-            user2@email.com | user2 <br />
-            user3@email.com | user3 <br />
-            user4@email.com | user4
+            user1@mail.com | user1 <br />
+            user2@mail.com | user2 <br />
+            user3@mail.com | user3 <br />
+            user4@mail.com | user4
           </p>
         </div>
       </form>
