@@ -73,7 +73,7 @@ export default function UploadForm() {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result);
           reader.readAsDataURL(file);
-        })
+        }),
     );
 
     Promise.all(readers).then((images) => {
@@ -185,14 +185,14 @@ export default function UploadForm() {
         const formData = new FormData();
         formData.append(
           "upload_preset",
-          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
         );
         formData.append("file", img.file);
         formData.append("public_id", `post_${uniqueId}_${i}`);
 
         const res = await axios.post(
           import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,
-          formData
+          formData,
         );
         imageUrls.push(res.data.secure_url);
       }
@@ -201,7 +201,7 @@ export default function UploadForm() {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/posts`,
         { imageUrls, caption, emoji, media },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       window.location.href = "/";
@@ -287,10 +287,10 @@ export default function UploadForm() {
           />
 
           <div className="flex justify-between pt-2 relative z-10 mx-10">
-            <button className="btn btn-primary" onClick={Prev}>
+            <button className="btn btn-primary" onClick={Prev} type="button">
               Previous
             </button>
-            <button className="btn btn-primary " onClick={Next}>
+            <button className="btn btn-primary " onClick={Next} type="button">
               Next
             </button>
           </div>
