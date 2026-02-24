@@ -1,4 +1,3 @@
-// components/messages/ConversationList.jsx
 import { useEffect, useState } from "react";
 import { Search, Delete } from "lucide-react";
 
@@ -16,11 +15,11 @@ function SearchUsers({ onUserSelect }) {
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/users/search?name=${encodeURIComponent(
-          query
+          query,
         )}`,
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Search failed");
@@ -107,7 +106,7 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
           `${import.meta.env.VITE_API_URL}/messages/conversations`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
         if (!res.ok) {
           setConversations([]);
@@ -141,7 +140,7 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
         const exists = prev.some(
           (conv) =>
             (conv.sender?._id === userId && conv.recipient?._id === user._id) ||
-            (conv.sender?._id === user._id && conv.recipient?._id === userId)
+            (conv.sender?._id === user._id && conv.recipient?._id === userId),
         );
         if (exists) {
           onSelect(user._id, user); // Select existing if found
@@ -171,7 +170,7 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
       if (!res.ok) throw new Error("Failed to delete conversation");
       setConversations((prev) =>
@@ -180,8 +179,8 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
             conv.sender &&
             conv.sender._id !== participantId &&
             conv.recipient &&
-            conv.recipient._id !== participantId
-        )
+            conv.recipient._id !== participantId,
+        ),
       );
       if (participantId === selectedId) onSelect(null, null); // Clear open conversation
     } catch (err) {

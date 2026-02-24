@@ -1,4 +1,3 @@
-// src/pages/upload.jsx
 import UploadForm from "../components/UploadForm";
 import { RotateCcw } from "lucide-react";
 

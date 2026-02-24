@@ -1,4 +1,4 @@
-import "../config/env.js"; // 👈 Load env early
+import "../config/env.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 

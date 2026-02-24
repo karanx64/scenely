@@ -1,12 +1,9 @@
-// /routes/message.js
 import express from "express";
 import verifyToken from "../middleware/auth.js";
 import Message from "../models/Message.js";
-import Post from "../models/Post.js";
 
 const router = express.Router();
 
-// Send a message (with optional postId)
 router.post("/", verifyToken, async (req, res) => {
   const { recipientId, text, postId } = req.body;
   try {

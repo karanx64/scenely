@@ -20,8 +20,6 @@ router.post("/", verifyToken, async (req, res) => {
       media,
     });
 
-    
-
     const saved = await newPost.save();
     res.status(201).json(saved);
   } catch (err) {
@@ -31,7 +29,7 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-// ✅ Get posts by a specific user
+// Get posts by a specific user
 router.get("/user/:userId", async (req, res) => {
   try {
     const posts = await Post.find({ userId: req.params.userId })
@@ -47,7 +45,7 @@ router.get("/user/:userId", async (req, res) => {
   }
 });
 
-// ✅ Get all posts (needed for home + explore)
+// Get all posts (needed for home + explore)
 router.get("/", async (req, res) => {
   try {
     const posts = await Post.find()

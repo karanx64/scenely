@@ -1,4 +1,3 @@
-// components/PostCard.jsx
 import { useEffect, useRef, useState } from "react";
 import {
   ChevronLeft,
@@ -111,7 +110,7 @@ export default function PostCard({ post }) {
       const res = await axios.post(
         `${API_URL}/posts/${post._id}/like`,
         {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       setLikesCount(res.data.likes);
     } catch (err) {
@@ -142,11 +141,11 @@ export default function PostCard({ post }) {
             },
             body: JSON.stringify({ publicId }),
           });
-        })
+        }),
       );
 
       window.dispatchEvent(
-        new CustomEvent("postDeleted", { detail: post._id })
+        new CustomEvent("postDeleted", { detail: post._id }),
       );
     } catch (err) {
       console.error("Delete failed:", err);

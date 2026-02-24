@@ -41,15 +41,3 @@ function App() {
 }
 
 export default App;
-
-// import TestFileReader from "./components/TestFileReader";
-
-// function App() {
-//   return (
-//     <div className="min-h-screen bg-gray-900">
-//       <TestFileReader />
-//     </div>
-//   );
-// }
-
-// export default App;
