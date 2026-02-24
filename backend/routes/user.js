@@ -1,4 +1,3 @@
-// routes/user.js
 import express from "express";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
@@ -14,9 +13,9 @@ router.delete("/me", verifyToken, async (req, res) => {
 
     const posts = await Post.find({ userId });
 
-    const user = await User.findById(userId); // ✅ this was missing
+    const user = await User.findById(userId);
 
-    // Delete user's avatar from Cloudinary (if exists)
+    // Delete user avatar from Cloudinary (if exists)
     if (user.avatar) {
       const url = new URL(user.avatar);
       const path = url.pathname; // e.g., /v123456789/avatar_xyz.jpg
@@ -58,7 +57,7 @@ router.put("/avatar", verifyToken, async (req, res) => {
         avatar: avatarUrl,
         hasAvatar: true,
       },
-      { new: true }
+      { new: true },
     );
     res.json({
       message: "Avatar updated",
@@ -142,13 +141,13 @@ router.put("/unfollow/:userId", verifyToken, async (req, res) => {
 
     // Remove currentUser from followers of userToUnfollow
     userToUnfollow.followers = userToUnfollow.followers.filter(
-      (id) => id.toString() !== currentUserId
+      (id) => id.toString() !== currentUserId,
     );
     await userToUnfollow.save();
 
     // Remove userToUnfollow from following of currentUser
     currentUser.following = currentUser.following.filter(
-      (id) => id.toString() !== userIdToUnfollow
+      (id) => id.toString() !== userIdToUnfollow,
     );
     await currentUser.save();
 
@@ -163,7 +162,7 @@ router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
       .select(
-        "-password -email" // hide sensitive info
+        "-password -email", // hide sensitive info
       )
       .populate("followers", "username avatar")
       .populate("following", "username avatar");
@@ -192,7 +191,7 @@ router.get("/:userId/followers", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate(
       "followers",
-      "username avatar"
+      "username avatar",
     );
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -207,7 +206,7 @@ router.get("/:userId/following", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate(
       "following",
-      "username avatar"
+      "username avatar",
     );
     if (!user) return res.status(404).json({ message: "User not found" });
 

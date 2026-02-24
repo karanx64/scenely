@@ -14,9 +14,9 @@ const messageSchema = new mongoose.Schema(
       required: true,
     },
     text: { type: String },
-    post: { type: mongoose.Schema.Types.ObjectId, ref: "Post" }, // Optional
+    post: { type: mongoose.Schema.Types.ObjectId, ref: "Post" }, // optional
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Message", messageSchema);

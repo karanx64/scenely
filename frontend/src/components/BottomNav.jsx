@@ -1,4 +1,3 @@
-// src/components/BottomNav.jsx
 import {
   Home,
   Upload,

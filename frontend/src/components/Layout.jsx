@@ -1,4 +1,3 @@
-// src/components/Layout.jsx
 import Sidebar from "./Sidebar";
 import BottomNav from "./BottomNav";
 import { Outlet } from "react-router-dom";

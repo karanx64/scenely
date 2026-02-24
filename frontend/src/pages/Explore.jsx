@@ -1,4 +1,3 @@
-// src/pages/Explore.jsx
 import { useEffect, useState } from "react";
 import PostList from "../components/PostList";
 import ExploreMosaic from "../components/ExploreMosaic";

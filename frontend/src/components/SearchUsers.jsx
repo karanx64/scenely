@@ -1,4 +1,3 @@
-// src/components/SearchUsers.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Delete, Search } from "lucide-react";
@@ -20,13 +19,13 @@ export default function SearchUsers() {
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/users/search?name=${encodeURIComponent(
-          query
+          query,
         )}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       const data = await res.json();

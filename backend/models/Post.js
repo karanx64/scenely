@@ -1,4 +1,3 @@
-// models/Post.js
 import mongoose from "mongoose";
 
 const PostSchema = new mongoose.Schema(
@@ -8,9 +7,8 @@ const PostSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    imageUrls: [{ type: String, required: true }], // changed from imageUrl
+    imageUrls: [{ type: String, required: true }],
     caption: { type: String },
-    //new features: emoji, likes, views
     emoji: { type: String, default: "" },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     views: [{ type: String }],
@@ -18,12 +16,12 @@ const PostSchema = new mongoose.Schema(
     metadata: { type: Object },
     media: {
       title: { type: String },
-      type: { type: String }, // e.g., 'movie' or 'tv'
-      tmdbId: { type: String }, // optional
+      type: { type: String },
+      tmdbId: { type: String },
       year: { type: String },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Post", PostSchema);

@@ -3,7 +3,7 @@ import Cropper from "react-easy-crop";
 import getCroppedImage from "../utils/cropImage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Loader from "../components/Loader"; // Adjust the import based on your project structure
+import Loader from "../components/Loader";
 
 export default function SelectAvatar() {
   const [image, setImage] = useState(null);
@@ -34,7 +34,6 @@ export default function SelectAvatar() {
     setError(null);
 
     try {
-      // Create an HTMLImageElement from the URL
       const img = new Image();
       img.onload = async () => {
         // Get cropped image file
@@ -44,13 +43,13 @@ export default function SelectAvatar() {
         formData.append("file", file);
         formData.append(
           "upload_preset",
-          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
         );
 
         // Upload to Cloudinary
         const uploadRes = await axios.post(
           import.meta.env.VITE_CLOUDINARY_UPLOAD_URL,
-          formData
+          formData,
         );
 
         const avatarUrl = uploadRes.data.secure_url;
@@ -64,11 +63,11 @@ export default function SelectAvatar() {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         navigate("/");
-        setUploading(false); // Move this line here
+        setUploading(false);
       };
       img.onerror = (e) => {
         console.error("Error loading image:", e);

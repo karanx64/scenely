@@ -6,10 +6,10 @@ import { MoveDownLeft } from "lucide-react";
 
 export default function Messages() {
   const [recipientId, setRecipientId] = useState(null);
-  const [recipientInfo, setRecipientInfo] = useState(null); // NEW
+  const [recipientInfo, setRecipientInfo] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [searchParams] = useSearchParams();
-  const [showThread, setShowThread] = useState(false); // NEW: toggle for small screens
+  const [showThread, setShowThread] = useState(false); //  toggle for small screens
 
   // Restore recipientId and recipientInfo from localStorage on mount
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function Messages() {
     getMe();
   }, []);
 
-  // Auto-select recipient from query param
+  //  Auto-select recipient from query param
   useEffect(() => {
     const userParam = searchParams.get("user");
     if (userParam) setRecipientId(userParam);
@@ -44,7 +44,7 @@ export default function Messages() {
     if (recipientInfo) {
       localStorage.setItem(
         "selectedRecipientInfo",
-        JSON.stringify(recipientInfo)
+        JSON.stringify(recipientInfo),
       );
     }
   }, [recipientId, recipientInfo]);

@@ -1,4 +1,3 @@
-// components/SharePostModal.jsx
 import { useState, useEffect } from "react";
 import Modal from "./Modal";
 
@@ -19,7 +18,7 @@ export default function SharePostModal({ postId, onClose }) {
       }
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/search?name=${searchQuery}`
+          `${import.meta.env.VITE_API_URL}/users/search?name=${searchQuery}`,
         );
         const data = await res.json();
         setResults(data);
