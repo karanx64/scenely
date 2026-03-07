@@ -43,7 +43,7 @@ export default function SelectAvatar() {
         formData.append("file", file);
         formData.append(
           "upload_preset",
-          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET_USERS,
         );
 
         // Upload to Cloudinary

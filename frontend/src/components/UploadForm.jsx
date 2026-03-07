@@ -185,7 +185,7 @@ export default function UploadForm() {
         const formData = new FormData();
         formData.append(
           "upload_preset",
-          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET_POSTS,
         );
         formData.append("file", img.file);
         formData.append("public_id", `post_${uniqueId}_${i}`);
