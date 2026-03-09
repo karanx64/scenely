@@ -1,4 +1,3 @@
-SELECT schemaname, tablename, policyname 
-   FROM pg_policies 
-   WHERE schemaname = 'public'
-   ORDER BY tablename, policyname;
+SELECT schemaname, tablename 
+FROM pg_publication_tables 
+WHERE pubname = 'supabase_realtime';

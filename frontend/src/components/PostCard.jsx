@@ -9,77 +9,107 @@ import {
   Share,
   Trash2,
 } from "lucide-react";
-import axios from "axios";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 import SharePostModal from "./SharePostModal";
 import Modal from "./Modal";
 import Loader from "./Loader";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export default function PostCard({ post }) {
+  const { user } = useAuth();
   const [index, setIndex] = useState(0);
   const indexRef = useRef(0);
   const lastNavTime = useRef(0);
   const debounceDelay = 300;
 
-  const images = post.imageUrls || [];
+  // Handle both Supabase (image_urls) and MongoDB (imageUrls) format
+  const images = post.image_urls || post.imageUrls || [];
 
-  const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
-  const [viewsCount, setViewsCount] = useState(post.views?.length || 0);
+  const [likesCount, setLikesCount] = useState(0);
+  const [viewsCount, setViewsCount] = useState(0);
   const [liked, setLiked] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [likeLoading, setLikeLoading] = useState(false); // NEW: loading state for Like button
+  const [likeLoading, setLikeLoading] = useState(false);
 
-  const token = localStorage.getItem("token");
-  const [currentUserId, setCurrentUserId] = useState(null);
-
+  // Fetch initial likes and views count
   useEffect(() => {
-    try {
-      if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setCurrentUserId(payload.id);
-      }
-    } catch (err) {
-      console.warn("Invalid token:", err);
-      setCurrentUserId(null);
-    }
-  }, [token]);
+    const fetchCounts = async () => {
+      try {
+        // Get likes count
+        const { count: likesCount } = await supabase
+          .from("likes")
+          .select("*", { count: "exact", head: true })
+          .eq("post_id", post.id);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      let viewerId;
+        setLikesCount(likesCount || 0);
 
-      if (token) {
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          viewerId = payload.id;
-        } catch (err) {
-          console.error("Invalid token", err);
+        // Check if current user liked this post
+        if (user) {
+          const { data: userLike } = await supabase
+            .from("likes")
+            .select("id")
+            .eq("post_id", post.id)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          setLiked(!!userLike);
         }
-      }
 
-      if (!viewerId) {
-        viewerId = localStorage.getItem("viewerId");
+        // Get views count
+        const { count: viewsCount } = await supabase
+          .from("views")
+          .select("*", { count: "exact", head: true })
+          .eq("post_id", post.id);
+
+        setViewsCount(viewsCount || 0);
+      } catch (err) {
+        console.error("Error fetching counts:", err);
+      }
+    };
+
+    fetchCounts();
+  }, [post.id, user]);
+
+  // Track view after 2 seconds
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+      try {
+        let viewerId = user?.id;
+
         if (!viewerId) {
-          viewerId = crypto.randomUUID();
-          localStorage.setItem("viewerId", viewerId);
+          viewerId = localStorage.getItem("viewerId");
+          if (!viewerId) {
+            viewerId = crypto.randomUUID();
+            localStorage.setItem("viewerId", viewerId);
+          }
         }
-      }
 
-      axios
-        .post(`${API_URL}/posts/${post._id}/view`, { viewerId })
-        .then((res) => {
-          setViewsCount(res.data.views);
-        })
-        .catch((err) => {
-          console.error("View tracking failed:", err);
-        });
+        // Check if already viewed
+        const { data: existingView } = await supabase
+          .from("views")
+          .select("id")
+          .eq("post_id", post.id)
+          .eq("user_id", viewerId)
+          .maybeSingle();
+
+        if (!existingView) {
+          const { error } = await supabase
+            .from("views")
+            .insert({ post_id: post.id, user_id: viewerId });
+
+          if (!error) {
+            setViewsCount((prev) => prev + 1);
+          }
+        }
+      } catch (err) {
+        console.error("View tracking error:", err);
+      }
     }, 2000);
 
     return () => clearTimeout(timeout);
-  }, [post._id]);
+  }, [post.id, user]);
 
   indexRef.current = index;
 
@@ -104,57 +134,66 @@ export default function PostCard({ post }) {
   };
 
   const handleLike = async () => {
-    if (likeLoading) return; // Prevent multiple rapid submissions
-    setLikeLoading(true); // Disable button immediately
+    if (likeLoading || !user) return;
+    setLikeLoading(true);
+
     try {
-      const res = await axios.post(
-        `${API_URL}/posts/${post._id}/like`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      setLikesCount(res.data.likes);
+      if (liked) {
+        // Unlike
+        const { error } = await supabase
+          .from("likes")
+          .delete()
+          .eq("post_id", post.id)
+          .eq("user_id", user.id);
+
+        if (error) throw error;
+
+        setLiked(false);
+        setLikesCount((prev) => prev - 1);
+      } else {
+        // Like
+        const { error } = await supabase
+          .from("likes")
+          .insert({ post_id: post.id, user_id: user.id });
+
+        if (error) throw error;
+
+        setLiked(true);
+        setLikesCount((prev) => prev + 1);
+      }
     } catch (err) {
       console.error("Like error:", err);
     } finally {
-      setLikeLoading(false); // Re-enable button after response
+      setLikeLoading(false);
     }
   };
 
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      const res = await fetch(`${API_URL}/posts/${post._id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      // Delete post (likes, views cascade automatically)
+      const { error } = await supabase.from("posts").delete().eq("id", post.id);
 
-      await Promise.all(
-        data.imageUrls.map((url) => {
-          const publicId = url.split("/").pop().split(".")[0];
-          return fetch(`${API_URL}/upload/cloudinary-delete`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({ publicId }),
-          });
-        }),
-      );
+      if (error) throw error;
 
-      window.dispatchEvent(
-        new CustomEvent("postDeleted", { detail: post._id }),
-      );
+      // Emit event to remove post from UI
+      window.dispatchEvent(new CustomEvent("postDeleted", { detail: post.id }));
+      setShowDeleteModal(false);
     } catch (err) {
-      console.error("Delete failed:", err);
+      console.error("Delete error:", err);
       alert("Failed to delete post");
     } finally {
       setDeleting(false);
-      setShowDeleteModal(false);
     }
   };
+
+  // Get username - handle both Supabase (users object) and MongoDB (userId.username) format
+  const username = post.users?.username || post.userId?.username || "Unknown";
+  const userAvatar = post.users?.avatar || post.userId?.avatar || "";
+
+  // Handle both user_id (Supabase) and userId (MongoDB)
+  const postUserId = post.user_id || post.userId?._id || post.userId;
+  const isOwner = user && postUserId === user.id;
 
   let startX = 0;
 
@@ -172,12 +211,12 @@ export default function PostCard({ post }) {
         onTouchStart={(e) => (startX = e.touches[0].clientX)}
         onTouchEnd={handleSwipe}
       >
-        <div className="absolute  top-0 left-0 z-15 flex items-center text-white/50 cursor-default hover:text-white/80 transition-all duration-300">
-          {post.emoji && <p className="text-xl  ">{post.emoji}</p>}
-          {post.media.type === "movie" && (
+        <div className="absolute top-0 left-0 z-15 flex items-center text-white/50 cursor-default hover:text-white/80 transition-all duration-300">
+          {post.emoji && <p className="text-xl">{post.emoji}</p>}
+          {post.media?.type === "movie" && (
             <Popcorn size={20} className="inline" />
           )}
-          {post.media.type === "tv" && (
+          {post.media?.type === "tv" && (
             <TvMinimalPlay size={20} className="inline" />
           )}
         </div>
@@ -194,7 +233,7 @@ export default function PostCard({ post }) {
         ))}
 
         {images.length > 1 && (
-          <div className="flex justify-evenly  absolute  bottom-0 z-15 w-full p-1 text-primary-content/50 ">
+          <div className="flex justify-evenly absolute bottom-0 z-15 w-full p-1 text-primary-content/50">
             <button onClick={prev} className="rounded-4xl border-1">
               <ChevronLeft size={16} />
             </button>
@@ -207,26 +246,21 @@ export default function PostCard({ post }) {
       </div>
 
       <div className="card-body p-1">
-        <div className="flex ">
+        <div className="flex">
           {post.media?.title && (
             <p className="text-sm text-base-content/60 inline-flex justify-center">
               {post.media.title}
-              {post.media.year && ` (${post.media.year})`}{" "}
-              {/* Correctly display year in brackets */}
+              {post.media.year && ` (${post.media.year})`}
             </p>
           )}
         </div>
 
         <div className="flex justify-between items-center text-sm mt-0 relative bottom-0">
           <span
-            onClick={() => {
-              handleLike();
-              setLiked((prev) => !prev);
-            }}
-            className={`text-base-content/60 flex items-center gap-1 ${
+            onClick={handleLike}
+            className={`text-base-content/60 flex items-center gap-1 cursor-pointer ${
               likeLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={likeLoading}
           >
             {likeLoading ? (
               <Loader type="spinner" size="sm" />
@@ -236,15 +270,19 @@ export default function PostCard({ post }) {
                 <HeartPlus
                   size={20}
                   className={`text-base-content/60 ${
-                    liked ? "text-red-500" : ""
+                    liked ? "text-red-500 fill-red-500" : ""
                   }`}
                 />
               </span>
             )}
           </span>
 
-          <span className="text-base-content/60 flex items-center gap-1">
-            <Share size={20} className="inline" onClick={setShowShareModal} />
+          <span className="text-base-content/60 flex items-center gap-1 cursor-pointer">
+            <Share
+              size={20}
+              className="inline"
+              onClick={() => setShowShareModal(true)}
+            />
           </span>
 
           <span className="text-base-content/60 flex items-center gap-1">
@@ -254,20 +292,19 @@ export default function PostCard({ post }) {
 
         {post.caption && <p>{post.caption}</p>}
 
-        {/* show delete button only on profile page */}
-        {location.pathname === "/profile" &&
-          currentUserId === post.userId._id && (
-            <button
-              className="btn btn-error btn-xs rounded-none rounded-bl-lg  top-0 z-15 right-0 absolute"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              <Trash2 size={20} />
-            </button>
-          )}
+        {/* Show delete button only if user owns the post */}
+        {isOwner && (
+          <button
+            className="btn btn-error btn-xs rounded-none rounded-bl-lg top-0 z-15 right-0 absolute"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            <Trash2 size={20} />
+          </button>
+        )}
 
         {showShareModal && (
           <SharePostModal
-            postId={post._id}
+            postId={post.id}
             onClose={() => setShowShareModal(false)}
           />
         )}

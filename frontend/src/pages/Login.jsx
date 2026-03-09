@@ -1,21 +1,14 @@
 import { useState } from "react";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import Loader from "../components/Loader";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false); // Add loading state
-
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (token) {
-      navigate("/");
-    }
-  }, []);
+  const { signIn } = useAuth();
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -24,33 +17,15 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
-
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("hasAvatar", data.user.hasAvatar);
-
-      // navigate("/");
-
-      // avatar logic
-      if (!data.user.hasAvatar) {
-        navigate("/select-avatar");
-      } else {
-        navigate("/");
-      }
+      await signIn(formData.email, formData.password);
+      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -92,17 +67,9 @@ export default function Login() {
         <div>
           <p className="text-sm text-center">
             Don't have an account?{" "}
-            <a href="/register" className="text-primary hover:underline">
+            <a href="/register" className="text-primary">
               Register
             </a>
-          </p>
-          <p className="text-sm text-center mt-8 ">
-            For guest login, <br />
-            use below credentials <br />
-            user1@mail.com | user1 <br />
-            user2@mail.com | user2 <br />
-            user3@mail.com | user3 <br />
-            user4@mail.com | user4
           </p>
         </div>
       </form>

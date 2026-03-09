@@ -1,19 +1,63 @@
 import { useEffect, useState } from "react";
-import Loader from "./Loader"; // Adjust the import path as necessary
+import { supabase } from "../lib/supabase";
+import Loader from "./Loader";
 
 export default function FollowersModal({ userId, type, onClose }) {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/${userId}/${type}`
-        );
-        const data = await res.json();
-        setUsers(data); // data is already the array of users
+        setLoading(true);
+
+        if (type === "followers") {
+          // Get users who follow this user
+          const { data, error } = await supabase
+            .from("follows")
+            .select(
+              `
+              follower_id,
+              users!follows_follower_id_fkey (
+                id,
+                username,
+                avatar
+              )
+            `,
+            )
+            .eq("following_id", userId);
+
+          if (error) throw error;
+
+          // Extract user data from the nested structure
+          const followers = data.map((item) => item.users);
+          setUsers(followers);
+        } else if (type === "following") {
+          // Get users that this user follows
+          const { data, error } = await supabase
+            .from("follows")
+            .select(
+              `
+              following_id,
+              users!follows_following_id_fkey (
+                id,
+                username,
+                avatar
+              )
+            `,
+            )
+            .eq("follower_id", userId);
+
+          if (error) throw error;
+
+          // Extract user data from the nested structure
+          const following = data.map((item) => item.users);
+          setUsers(following);
+        }
       } catch (err) {
         console.error("Failed to fetch followers/following", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -32,14 +76,16 @@ export default function FollowersModal({ userId, type, onClose }) {
           ✕
         </button>
 
-        {users.length === 0 ? (
+        {loading ? (
           <div className="flex justify-center py-4">
             <Loader type="spinner" size="md" />
           </div>
+        ) : users.length === 0 ? (
+          <p className="text-center opacity-70 py-4">No {type} yet</p>
         ) : (
           <ul className="space-y-3">
             {users.map((user) => (
-              <li key={user._id} className="flex items-center gap-3">
+              <li key={user.id} className="flex items-center gap-3">
                 {user.avatar ? (
                   <img
                     src={user.avatar}

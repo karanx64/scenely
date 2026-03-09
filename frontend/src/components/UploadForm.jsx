@@ -1,12 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PostPreview from "./PostPreview";
 import getCroppedImg from "../utils/cropImage";
 import axios from "axios";
 import MovieSearch from "./MovieSearch";
 import Modal from "./Modal";
 import Loader from "./Loader";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function UploadForm() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [selectedImages, setSelectedImages] = useState([]);
   const [croppedImages, setCroppedImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -28,7 +34,7 @@ export default function UploadForm() {
     tmdbId: "",
     type: "",
   });
-  const [cropError, setCropError] = useState(""); // <-- NEW
+  const [cropError, setCropError] = useState("");
   const [showMediaError, setShowMediaError] = useState(false);
 
   const timestamp = Date.now();
@@ -59,7 +65,7 @@ export default function UploadForm() {
   const handleCropComplete = (c) => {
     if (c.width && c.height) {
       setCompletedCrop(c);
-      setCropError(""); // clear error if crop is valid
+      setCropError("");
     }
   };
 
@@ -91,7 +97,7 @@ export default function UploadForm() {
         y: 10,
       });
       setStep("crop");
-      setCropError(""); // clear error on new selection
+      setCropError("");
     });
   };
 
@@ -153,7 +159,7 @@ export default function UploadForm() {
       x: 10,
       y: 10,
     });
-    setCropError(""); // clear error on prev
+    setCropError("");
   };
 
   const handleNext = () => {
@@ -166,7 +172,7 @@ export default function UploadForm() {
       x: 10,
       y: 10,
     });
-    setCropError(""); // clear error on next
+    setCropError("");
   };
 
   const Prev = () => {
@@ -176,9 +182,11 @@ export default function UploadForm() {
   const Next = () => {
     setCurrentIndex((i) => (i === croppedImages.length - 1 ? 0 : i + 1));
   };
+
   const handleSubmit = async () => {
     setUploading(true);
     try {
+      // Upload images to Cloudinary
       const imageUrls = [];
       for (let i = 0; i < croppedImages.length; i++) {
         const img = croppedImages[i];
@@ -197,17 +205,28 @@ export default function UploadForm() {
         imageUrls.push(res.data.secure_url);
       }
 
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/posts`,
-        { imageUrls, caption, emoji, media },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      // Create post in Supabase
+      const { data, error } = await supabase
+        .from("posts")
+        .insert({
+          user_id: user.id,
+          image_urls: imageUrls,
+          caption: caption,
+          emoji: emoji,
+          tags: [], // Add tags if needed
+          metadata: {}, // Add metadata if needed
+          media: media,
+        })
+        .select()
+        .single();
 
-      window.location.href = "/";
+      if (error) throw error;
+
+      console.log("Post created:", data);
+      navigate("/profile");
     } catch (err) {
       console.error("Post error:", err);
-      alert("Upload failed");
+      alert("Upload failed: " + err.message);
     } finally {
       setUploading(false);
     }

@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import ConversationList from "../components/Messages/ConversationList";
 import MessageThread from "../components/Messages/MessageThread";
-import { MoveDownLeft } from "lucide-react";
 
 export default function Messages() {
+  const { user } = useAuth();
   const [recipientId, setRecipientId] = useState(null);
   const [recipientInfo, setRecipientInfo] = useState(null);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const [showThread, setShowThread] = useState(false);
   const [searchParams] = useSearchParams();
-  const [showThread, setShowThread] = useState(false); //  toggle for small screens
 
   // Restore recipientId and recipientInfo from localStorage on mount
   useEffect(() => {
@@ -19,18 +19,7 @@ export default function Messages() {
     if (storedInfo) setRecipientInfo(JSON.parse(storedInfo));
   }, []);
 
-  useEffect(() => {
-    const getMe = async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await res.json();
-      setCurrentUserId(data._id);
-    };
-    getMe();
-  }, []);
-
-  //  Auto-select recipient from query param
+  // Auto-select recipient from query param
   useEffect(() => {
     const userParam = searchParams.get("user");
     if (userParam) setRecipientId(userParam);
@@ -58,11 +47,11 @@ export default function Messages() {
         }`}
       >
         <ConversationList
-          userId={currentUserId}
+          userId={user?.id}
           onSelect={(id, info) => {
             setRecipientId(id);
             setRecipientInfo(info);
-            setShowThread(true); // Show thread on small screens
+            setShowThread(true);
           }}
           selectedId={recipientId}
         />
@@ -73,27 +62,20 @@ export default function Messages() {
         }`}
       >
         {recipientId ? (
-          <>
-            {/* Back button for small screens */}
-            <button
-              className=" sm:hidden top-[45%] fixed hover:-left-5 active:-left-5 -left-10 z-101 btn btn-primary  btn-lg opacity-40 hover:opacity-100 active:opacity-100 transition-all duration-200"
-              onClick={() => setShowThread(false)}
-            >
-              <MoveDownLeft size={20} className="ml-5 -mr-4 " />
-            </button>
-            <MessageThread
-              currentUserId={currentUserId}
-              recipientId={recipientId}
-              recipientInfo={recipientInfo}
-              onClearThread={() => {
-                setRecipientId(null);
-                setRecipientInfo(null);
-                setShowThread(false); // Return to conversation list
-              }}
-            />
-          </>
+          <MessageThread
+            recipientId={recipientId}
+            currentUserId={user?.id}
+            recipientInfo={recipientInfo}
+            onClearThread={() => {
+              setRecipientId(null);
+              setRecipientInfo(null);
+              setShowThread(false);
+            }}
+          />
         ) : (
-          <p className="text-base-content/70 italic">Select a conversation</p>
+          <div className="flex items-center justify-center h-full text-base-content/50">
+            Select a conversation to start messaging
+          </div>
         )}
       </div>
     </div>

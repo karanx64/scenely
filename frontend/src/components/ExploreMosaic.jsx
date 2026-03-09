@@ -17,12 +17,17 @@ export default function ExploreMosaic({ posts }) {
       columnClassName="flex flex-col gap-1"
     >
       {posts.map((post, postIndex) => {
-        const currentImage = post.imageUrls[0];
+        // Handle both Supabase (image_urls) and MongoDB (imageUrls)
+        const images = post.image_urls || post.imageUrls || [];
+        const currentImage = images[0];
         const randomHeight = Math.floor(Math.random() * 10) + 300;
+
+        // Use Supabase id or MongoDB _id
+        const postId = post.id || post._id;
 
         return (
           <div
-            key={post._id}
+            key={postId}
             className="relative bg-black overflow-hidden cursor-pointer"
             style={{ height: `${randomHeight}px` }}
           >
@@ -33,8 +38,8 @@ export default function ExploreMosaic({ posts }) {
             />
             <div className="absolute top-2 left-2 flex items-center gap-1 text-white/80">
               {post.emoji && <span className="text-xl">{post.emoji}</span>}
-              {post.media.type === "movie" && <Popcorn size={20} />}
-              {post.media.type === "tv" && <TvMinimalPlay size={20} />}
+              {post.media?.type === "movie" && <Popcorn size={20} />}
+              {post.media?.type === "tv" && <TvMinimalPlay size={20} />}
             </div>
           </div>
         );

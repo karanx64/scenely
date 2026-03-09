@@ -3,9 +3,12 @@ import Cropper from "react-easy-crop";
 import getCroppedImage from "../utils/cropImage";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 import Loader from "../components/Loader";
 
 export default function SelectAvatar() {
+  const { user } = useAuth();
   const [image, setImage] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -28,7 +31,7 @@ export default function SelectAvatar() {
   }, []);
 
   const handleUpload = async () => {
-    if (!image || !croppedAreaPixels) return;
+    if (!image || !croppedAreaPixels || !user) return;
 
     setUploading(true);
     setError(null);
@@ -43,7 +46,8 @@ export default function SelectAvatar() {
         formData.append("file", file);
         formData.append(
           "upload_preset",
-          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET_USERS,
+          import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET ||
+            import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET_USERS,
         );
 
         // Upload to Cloudinary
@@ -54,17 +58,16 @@ export default function SelectAvatar() {
 
         const avatarUrl = uploadRes.data.secure_url;
 
-        // Update backend user avatar
-        const token = localStorage.getItem("token");
-        await axios.put(
-          `${import.meta.env.VITE_API_URL}/users/avatar`,
-          { avatarUrl },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
+        // Update user avatar in Supabase
+        const { error: updateError } = await supabase
+          .from("users")
+          .update({
+            avatar: avatarUrl,
+            has_avatar: true,
+          })
+          .eq("id", user.id);
+
+        if (updateError) throw updateError;
 
         navigate("/");
         setUploading(false);
@@ -77,7 +80,7 @@ export default function SelectAvatar() {
       img.src = image;
     } catch (err) {
       console.error(err);
-      setError("Upload failed");
+      setError("Upload failed: " + (err.message || "Unknown error"));
       setUploading(false);
     }
   };
@@ -86,7 +89,12 @@ export default function SelectAvatar() {
     navigate("/profile");
   };
 
-  if (uploading) return <Loader type="spinner" size="md" className="m-auto" />;
+  if (uploading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader type="spinner" size="lg" />
+      </div>
+    );
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 text-base-content p-4">
@@ -121,7 +129,7 @@ export default function SelectAvatar() {
             max={3}
             step={0.1}
             value={zoom}
-            onChange={(e) => setZoom(e.target.value)}
+            onChange={(e) => setZoom(parseFloat(e.target.value))}
             className="range w-full"
           />
         )}
@@ -135,10 +143,7 @@ export default function SelectAvatar() {
         >
           {uploading ? "Uploading..." : "Save and Continue"}
         </button>
-        <button
-          className="btn btn-error w-full"
-          onClick={() => goBackToProfile()}
-        >
+        <button className="btn btn-error w-full" onClick={goBackToProfile}>
           Go Back
         </button>
       </div>

@@ -1,4 +1,6 @@
 import "./config/env.js"; // Correct the path here
+import postsSupabaseRoutes from "./routes/posts-supabase.js";
+import messagesSupabaseRoutes from "./routes/messages-supabase.js";
 
 //test_branch check
 
@@ -47,3 +49,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/users", userRoutes);
 
 app.use("/api/messages", messageRoutes);
+
+app.use("/api/posts-supabase", postsSupabaseRoutes);
+
+app.use("/api/messages-supabase", messagesSupabaseRoutes);
