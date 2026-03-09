@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import PostList from "../components/PostList";
+import { supabase } from "../lib/supabase";
 import ExploreMosaic from "../components/ExploreMosaic";
-const API_URL = import.meta.env.VITE_API_URL;
 import SearchUsers from "../components/SearchUsers";
 import { ArrowUpFromLine } from "lucide-react";
 import Loader from "../components/Loader";
@@ -11,11 +10,32 @@ export default function Explore() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/posts`)
-      .then((res) => res.json())
-      .then((data) => setPosts(data))
-      .catch((err) => console.error("Error fetching posts:", err))
-      .finally(() => setLoading(false));
+    const fetchPosts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("posts")
+          .select(
+            `
+            *,
+            users!posts_user_id_fkey (
+              id,
+              username,
+              avatar
+            )
+          `,
+          )
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        setPosts(data || []);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
   }, []);
 
   return (

@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabase";
 import { Delete, Search } from "lucide-react";
 
-export default function SearchUsers() {
+export default function SearchUsers({ onUserSelect }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -17,21 +17,16 @@ export default function SearchUsers() {
     if (!query.trim()) return;
 
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/search?name=${encodeURIComponent(
-          query,
-        )}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      // Search users by username (case-insensitive)
+      const { data, error } = await supabase
+        .from("users")
+        .select("id, username, email, avatar")
+        .ilike("username", `%${query}%`);
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Search failed");
-      setResults(data);
+      if (error) throw error;
+      setResults(data || []);
     } catch (err) {
+      console.error("Search error:", err);
       setError(err.message);
     }
   };
@@ -40,6 +35,16 @@ export default function SearchUsers() {
     setQuery("");
     setResults([]);
     setError(null);
+  };
+
+  const handleUserClick = (user) => {
+    if (onUserSelect) {
+      // If used in messages/conversation context
+      onUserSelect(user);
+    } else {
+      // If used in explore/general context
+      navigate(`/user/${user.id}`);
+    }
   };
 
   return (
@@ -70,8 +75,8 @@ export default function SearchUsers() {
         <ul className="space-y-2">
           {results.map((user) => (
             <li
-              key={user._id}
-              onClick={() => navigate(`/user/${user._id}`)}
+              key={user.id}
+              onClick={() => handleUserClick(user)}
               className="flex items-center gap-3 p-2 rounded hover:bg-base-200 cursor-pointer"
             >
               {user.avatar ? (

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import Loader from "../components/Loader";
 
 export default function Register() {
@@ -10,46 +10,31 @@ export default function Register() {
     password: "",
   });
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/");
-    }
-  }, [navigate]);
+  const { signUp } = useAuth();
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const [success, setSuccess] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
-    setLoading(true); // Start loading
+    setLoading(true);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to register");
-
+      await signUp(formData.email, formData.password, formData.username);
       setSuccess(true);
       setTimeout(() => {
-        navigate("/login");
+        navigate("/select-avatar");
       }, 1500);
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -84,9 +69,15 @@ export default function Register() {
             value={formData.password}
             onChange={handleChange}
             className="input input-bordered w-full"
+            minLength={6}
             required
           />
           {error && <p className="text-error text-sm">{error}</p>}
+          {success && (
+            <p className="text-success text-sm">
+              Registration successful! Redirecting...
+            </p>
+          )}
         </div>
         <div>
           <button
@@ -99,18 +90,10 @@ export default function Register() {
         </div>
         <div>
           <p className="text-sm text-center">
-            Don't have an account?{" "}
-            <a href="/login" className="text-primary hover:underline">
+            Already have an account?{" "}
+            <a href="/login" className="text-primary">
               Login
             </a>
-          </p>
-          <p className="text-sm text-center mt-8 ">
-            For guest login, <br />
-            use below credentials <br />
-            user1@mail.com | user1 <br />
-            user2@mail.com | user2 <br />
-            user3@mail.com | user3 <br />
-            user4@mail.com | user4
           </p>
         </div>
       </form>

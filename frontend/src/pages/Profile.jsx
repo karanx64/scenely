@@ -1,128 +1,165 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 import PostList from "../components/PostList";
 import UserAvatar from "../components/UserAvatar";
 import FollowersModal from "../components/FollowersModal";
-import Loader from "../components/Loader"; // Import Loader
+import Loader from "../components/Loader";
 import { BookUser, HeartHandshake, ArrowUpFromLine } from "lucide-react";
 
 export default function Profile() {
+  const { user: authUser } = useAuth();
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
   const [showModal, setShowModal] = useState(null);
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     const fetchProfile = async () => {
+      if (!authUser) return;
+
       try {
         setError(null);
-        setIsLoading(true); // Start loading
+        setIsLoading(true);
 
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        // Fetch user profile from users table
+        const { data: profileData, error: profileError } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", authUser.id)
+          .single();
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to fetch user");
-        setUser(data);
+        if (profileError) throw profileError;
+        setUser(profileData);
 
-        setFollowersCount(data.followers ? data.followers.length : 0);
-        setFollowingCount(data.following ? data.following.length : 0);
+        // Fetch user's posts
+        const { data: postsData, error: postsError } = await supabase
+          .from("posts")
+          .select(
+            `
+            *,
+            users!posts_user_id_fkey (
+              id,
+              username,
+              avatar
+            )
+          `,
+          )
+          .eq("user_id", authUser.id)
+          .order("created_at", { ascending: false });
 
-        if (data._id) {
-          const postRes = await fetch(
-            `${import.meta.env.VITE_API_URL}/posts/user/${data._id}`
-          );
+        if (postsError) throw postsError;
+        setPosts(postsData || []);
 
-          const postData = await postRes.json();
-          setPosts(postData);
-        }
+        // Fetch followers count
+        const { count: followersCount, error: followersError } = await supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("following_id", authUser.id);
+
+        if (followersError) throw followersError;
+
+        // Fetch following count
+        const { count: followingCount, error: followingError } = await supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("follower_id", authUser.id);
+
+        if (followingError) throw followingError;
+
+        setFollowersCount(followersCount || 0);
+        setFollowingCount(followingCount || 0);
       } catch (err) {
+        console.error("Profile fetch error:", err);
         setError(err.message);
       } finally {
-        setIsLoading(false); // Stop loading
+        setIsLoading(false);
       }
     };
 
-    if (token) fetchProfile();
-  }, [token]);
+    fetchProfile();
+  }, [authUser]);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-4">
-        <Loader type="spinner" size="md" />
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader type="spinner" size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <p className="text-error text-center">Error: {error}</p>
       </div>
     );
   }
 
   return (
-    <div className="p-4 text-base-content">
-      {error && <p className="text-error">{error}</p>}
+    <div className="p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Profile Header */}
+        <div className="flex flex-col items-center mb-6">
+          <UserAvatar size={100} clickable={true} showTooltip={false} />
+          <h1 className="text-2xl font-bold mt-4">{user?.username}</h1>
+          <p className="text-sm opacity-70">{user?.email}</p>
 
-      {user && (
-        <div className="mb-6 flex items-center justify-between p-3 rounded-2xl gap-6 bg-base-200 shadow-lg">
-          <div className="bg-base-300 rounded-2xl flex flex-col items-center p-3">
-            <UserAvatar
-              size={96}
-              clickable={true}
-              showTooltip={false}
-              className="cursor-alias"
-            />
-            <div className="flex flex-col justify-between items-center pt-2">
-              <p className="font-bold">{user.username}</p>
-              <p>{user.email}</p>
+          {/* Stats */}
+          <div className="flex gap-6 mt-4">
+            <button
+              onClick={() => setShowModal("followers")}
+              className="flex flex-col items-center hover:opacity-80"
+            >
+              <span className="font-bold">{followersCount}</span>
+              <span className="text-sm opacity-70">Followers</span>
+            </button>
+            <button
+              onClick={() => setShowModal("following")}
+              className="flex flex-col items-center hover:opacity-80"
+            >
+              <span className="font-bold">{followingCount}</span>
+              <span className="text-sm opacity-70">Following</span>
+            </button>
+            <div className="flex flex-col items-center">
+              <span className="font-bold">{posts.length}</span>
+              <span className="text-sm opacity-70">Posts</span>
             </div>
           </div>
+        </div>
 
-          <div className="flex-1 justify-evenly p-2 flex items-center">
-            <div className="flex justify-evenly items-center flex-col gap-6">
-              <p
-                className="cursor-pointer text-primary gap-2 flex items-center"
-                onClick={() => setShowModal("followers")}
-              >
-                <BookUser size={20} className="inline" />
-                <span className="font-semibold hidden sm:inline">
-                  Followers
-                </span>
-                {followersCount}
-              </p>
-              <p
-                className="cursor-pointer text-primary gap-2 flex items-center"
-                onClick={() => setShowModal("following")}
-              >
-                <HeartHandshake size={20} className="inline" />
-                <span className="font-semibold">Following</span>
-                {followingCount}
-              </p>
-            </div>
-          </div>
-
-          {showModal && user?._id && (
-            <FollowersModal
-              userId={user._id}
-              type={showModal}
-              onClose={() => setShowModal(null)}
-            />
+        {/* Posts */}
+        <div className="mt-8">
+          <h2 className="text-xl font-semibold mb-4">My Posts</h2>
+          {posts.length === 0 ? (
+            <p className="text-center opacity-70">No posts yet</p>
+          ) : (
+            <PostList posts={posts} setPosts={setPosts} />
           )}
         </div>
-      )}
 
-      <h2 className="text-xl font-semibold mb-2 text-center">My Posts</h2>
-      <PostList posts={posts} setPosts={setPosts} />
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed md:bottom-4 right-4 bottom-20 z-50 btn btn-primary flex gap-2 items-center"
-      >
-        <ArrowUpFromLine size={20} className="inline" />
-        <span className="hidden md:block">Go to top</span>
-      </button>
+        {/* Scroll to top button */}
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed md:bottom-4 right-4 bottom-20 z-50 btn btn-primary flex gap-2 items-center"
+        >
+          <ArrowUpFromLine size={20} className="inline" />
+          <span className="hidden md:block">Go to top</span>
+        </button>
+      </div>
+
+      {/* Followers/Following Modal */}
+      {showModal && (
+        <FollowersModal
+          userId={authUser.id}
+          type={showModal}
+          onClose={() => setShowModal(null)}
+        />
+      )}
     </div>
   );
 }

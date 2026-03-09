@@ -1,87 +1,165 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
+import { supabase } from "../../lib/supabase";
 import PostCard from "../PostCard";
-import Loader from "../../components/Loader"; // Adjust the import path as necessary
+import Loader from "../Loader";
 
 export default function MessageThread({
   recipientId,
   currentUserId,
   recipientInfo,
-  onClearThread, // NEW PROP
+  onClearThread,
 }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
-  const [sending, setSending] = useState(false); // NEW STATE FOR LOADING
+  const [sending, setSending] = useState(false);
+  const messagesEndRef = useRef(null);
 
-  // Fetch messages
-  const fetchMessages = useCallback(async () => {
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/messages/conversation/${recipientId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-    const data = await res.json();
-    setMessages(data);
-  }, [recipientId]);
-
-  // Polling for new messages
-  useEffect(() => {
-    fetchMessages();
-    const interval = setInterval(() => {
-      fetchMessages();
-    }, 1500);
-    return () => clearInterval(interval);
-  }, [fetchMessages]);
-
-  // Send a new message
-  const sendMessage = async () => {
-    if (!text.trim()) return;
-    setSending(true); // SET LOADING TO TRUE
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({
-        recipientId,
-        text,
-      }),
-    });
-    const newMessage = await res.json();
-    setSending(false); // SET LOADING TO FALSE
-    // Ensure sender is an object for immediate styling
-    const formattedMessage = {
-      ...newMessage,
-      sender: { _id: currentUserId },
-    };
-    setMessages((prev) => [...prev, formattedMessage]);
-    setText("");
+  // Scroll to bottom when messages change
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Get recipient username from messages
-  let recipientUsername = "";
-  if (messages.length > 0) {
-    const firstMsg = messages[0];
-    if (firstMsg.sender && firstMsg.sender._id !== currentUserId) {
-      recipientUsername = firstMsg.sender.username;
-    } else if (firstMsg.recipient && firstMsg.recipient._id !== currentUserId) {
-      recipientUsername = firstMsg.recipient.username;
-    }
-  }
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
-  // Clear messages if recipientId changes (e.g., conversation is deleted)
+  // Fetch messages and set up real-time subscription
+  useEffect(() => {
+    if (!recipientId || !currentUserId) return;
+
+    fetchMessages();
+
+    // Set up real-time subscription for new messages
+    const channel = supabase
+      .channel(`conversation-${currentUserId}-${recipientId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+        },
+        (payload) => {
+          // Only add if message is part of this conversation
+          const newMsg = payload.new;
+          const isRelevant =
+            (newMsg.sender_id === currentUserId &&
+              newMsg.recipient_id === recipientId) ||
+            (newMsg.sender_id === recipientId &&
+              newMsg.recipient_id === currentUserId);
+
+          if (isRelevant) {
+            // Fetch full message with user data
+            fetchSingleMessage(newMsg.id);
+          }
+        },
+      )
+      .subscribe((status) => {
+        console.log("Realtime subscription status:", status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [recipientId, currentUserId]);
+
+  const fetchSingleMessage = async (messageId) => {
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .select(
+          `
+        *,
+        sender:users!messages_sender_id_fkey(id, username, avatar),
+        recipient:users!messages_recipient_id_fkey(id, username, avatar),
+        post:posts(id, image_urls, caption, emoji, media)
+      `,
+        )
+        .eq("id", messageId)
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setMessages((prev) => {
+          // Avoid duplicates
+          if (prev.find((m) => m.id === data.id)) return prev;
+          return [...prev, data];
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching single message:", err);
+    }
+  };
+
+  const fetchMessages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .select(
+          `
+          *,
+          sender:users!messages_sender_id_fkey(id, username, avatar),
+          recipient:users!messages_recipient_id_fkey(id, username, avatar),
+          post:posts(id, image_urls, caption, emoji, media)
+        `,
+        )
+        .or(
+          `and(sender_id.eq.${currentUserId},recipient_id.eq.${recipientId}),and(sender_id.eq.${recipientId},recipient_id.eq.${currentUserId})`,
+        )
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setMessages(data || []);
+    } catch (err) {
+      console.error("Error fetching messages:", err);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!text.trim()) return;
+
+    setSending(true);
+
+    try {
+      const { data, error } = await supabase
+        .from("messages")
+        .insert({
+          sender_id: currentUserId,
+          recipient_id: recipientId,
+          text: text.trim(),
+        })
+        .select(
+          `
+          *,
+          sender:users!messages_sender_id_fkey(id, username, avatar),
+          recipient:users!messages_recipient_id_fkey(id, username, avatar)
+        `,
+        )
+        .single();
+
+      if (error) throw error;
+
+      // Message will be added via real-time subscription
+      setText("");
+    } catch (err) {
+      console.error("Send message error:", err);
+      alert("Failed to send message");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  // Clear messages if recipientId changes
   useEffect(() => {
     if (!recipientId) {
-      setMessages([]); // Clear messages when recipientId is null
+      setMessages([]);
     }
   }, [recipientId]);
 
   return (
     <div className="flex flex-col h-full">
-      <div className=" text-lg font-bold border-b border-base-300 bg-base-100  flex items-center gap-2 z-100 w-full">
+      <div className="text-lg font-bold border-b border-base-300 bg-base-100 flex items-center gap-2 p-3">
         {recipientInfo?.avatar && (
           <img
             src={recipientInfo.avatar}
@@ -91,17 +169,17 @@ export default function MessageThread({
         )}
         <span>{recipientInfo?.username || "Conversation"}</span>
       </div>
+
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {messages.map((msg) => {
-          const isMine =
-            (msg.sender && msg.sender._id === currentUserId) ||
-            msg.sender === currentUserId;
+          const isMine = msg.sender_id === currentUserId;
+
           return (
             <div
-              key={msg._id}
+              key={msg.id}
               className={`max-w-xs px-3 py-2 rounded-2xl ${
                 isMine
-                  ? "ml-auto bg-primary text-primary-content "
+                  ? "ml-auto bg-primary text-primary-content"
                   : "mr-auto bg-base-200 text-base-content"
               }`}
             >
@@ -110,21 +188,26 @@ export default function MessageThread({
             </div>
           );
         })}
+        <div ref={messagesEndRef} />
       </div>
 
-      <div className="sticky bottom-0 z-10 bg-base-100 p-2 flex mt-10">
+      <div className="sticky bottom-0 bg-base-100 p-2 flex border-t border-base-300">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
+          placeholder="Type a message..."
           className="input input-bordered w-full rounded-r-none border-r-0"
           onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage();
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
           }}
         />
         <button
           onClick={sendMessage}
           className="btn btn-primary rounded-l-none"
-          disabled={!text.trim()}
+          disabled={!text.trim() || sending}
         >
           {sending ? <Loader type="spinner" size="sm" /> : "Send"}
         </button>

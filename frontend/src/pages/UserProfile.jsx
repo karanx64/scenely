@@ -1,95 +1,151 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 import PostList from "../components/PostList";
 import FollowersModal from "../components/FollowersModal";
 import { ArrowUpFromLine, BookUser, HeartHandshake } from "lucide-react";
+import Loader from "../components/Loader";
 
 export default function UserProfile() {
   const { userId } = useParams();
+  const { user: currentUser } = useAuth();
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [followersCount, setFollowersCount] = useState(0);
   const [followingCount, setFollowingCount] = useState(0);
-
   const [isFollowing, setIsFollowing] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState(null);
-
   const [showModal, setShowModal] = useState(null);
-
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setError(null);
+        setLoading(true);
 
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/${userId}`,
-        );
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to fetch user");
+        // Fetch user profile
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", userId)
+          .single();
 
-        setUser(data.user);
-        setFollowersCount(data.followersCount);
-        setFollowingCount(data.followingCount);
+        if (userError) throw userError;
+        setUser(userData);
 
-        const postRes = await fetch(
-          `${import.meta.env.VITE_API_URL}/posts/user/${userId}`,
-        );
-        const postData = await postRes.json();
-        setPosts(postData);
+        // Fetch user's posts
+        const { data: postsData, error: postsError } = await supabase
+          .from("posts")
+          .select(
+            `
+            *,
+            users!posts_user_id_fkey (
+              id,
+              username,
+              avatar
+            )
+          `,
+          )
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false });
+
+        if (postsError) throw postsError;
+        setPosts(postsData || []);
+
+        // Fetch followers count
+        const { count: followersCount, error: followersError } = await supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("following_id", userId);
+
+        if (followersError) throw followersError;
+        setFollowersCount(followersCount || 0);
+
+        // Fetch following count
+        const { count: followingCount, error: followingError } = await supabase
+          .from("follows")
+          .select("*", { count: "exact", head: true })
+          .eq("follower_id", userId);
+
+        if (followingError) throw followingError;
+        setFollowingCount(followingCount || 0);
+
+        // Check if current user is following this user
+        if (currentUser) {
+          const { data: followData } = await supabase
+            .from("follows")
+            .select("id")
+            .eq("follower_id", currentUser.id)
+            .eq("following_id", userId)
+            .maybeSingle();
+
+          setIsFollowing(!!followData);
+        }
       } catch (err) {
+        console.error("Profile fetch error:", err);
         setError(err.message);
-      }
-    };
-
-    const fetchCurrentUser = async () => {
-      if (!token) return;
-
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await res.json();
-        setCurrentUserId(data._id);
-        setIsFollowing(data.following.includes(userId));
-      } catch (err) {
-        console.error("Failed to get current user:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchProfile();
-    fetchCurrentUser();
-  }, [userId, token]);
+  }, [userId, currentUser]);
 
   const handleFollowToggle = async () => {
-    const endpoint = isFollowing ? "unfollow" : "follow";
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/users/${endpoint}/${userId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      if (!res.ok) throw new Error("Failed to update follow status");
+    if (!currentUser) return;
 
-      setIsFollowing(!isFollowing);
-      setFollowersCount((prev) => prev + (isFollowing ? -1 : 1));
+    try {
+      if (isFollowing) {
+        // Unfollow
+        const { error } = await supabase
+          .from("follows")
+          .delete()
+          .eq("follower_id", currentUser.id)
+          .eq("following_id", userId);
+
+        if (error) throw error;
+
+        setIsFollowing(false);
+        setFollowersCount((prev) => prev - 1);
+      } else {
+        // Follow
+        const { error } = await supabase.from("follows").insert({
+          follower_id: currentUser.id,
+          following_id: userId,
+        });
+
+        if (error) throw error;
+
+        setIsFollowing(true);
+        setFollowersCount((prev) => prev + 1);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Follow toggle error:", err);
+      alert("Failed to update follow status");
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Loader type="spinner" size="lg" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <p className="text-error text-center">Error: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 text-text">
-      {error && <p className="text-error mb-4">{error}</p>}
       {user && (
         <div className="mb-6 flex items-center justify-between p-3 rounded-2xl gap-6 bg-base-200 shadow-lg">
           <div className="bg-base-300 rounded-2xl flex flex-col items-center p-3">
@@ -106,7 +162,7 @@ export default function UserProfile() {
             )}
             <div className="flex flex-col justify-between items-center pt-2">
               <p className="font-bold">{user.username}</p>
-              <p>{user.email}</p>
+              <p className="text-sm opacity-70">{user.email}</p>
             </div>
           </div>
 
@@ -133,7 +189,7 @@ export default function UserProfile() {
             </div>
           </div>
 
-          {currentUserId && currentUserId !== user._id && (
+          {currentUser && currentUser.id !== userId && (
             <div className="flex flex-col gap-2 items-center">
               <button
                 onClick={handleFollowToggle}
@@ -145,7 +201,7 @@ export default function UserProfile() {
               </button>
               <button
                 onClick={() =>
-                  (window.location.href = `/messages?user=${user._id}`)
+                  (window.location.href = `/messages?user=${userId}`)
                 }
                 className="px-4 py-2 rounded bg-green-500 text-white w-full"
               >
@@ -156,7 +212,7 @@ export default function UserProfile() {
 
           {showModal && (
             <FollowersModal
-              userId={user._id}
+              userId={userId}
               type={showModal}
               onClose={() => setShowModal(null)}
             />
@@ -165,7 +221,12 @@ export default function UserProfile() {
       )}
 
       <h2 className="text-xl font-semibold mb-2 text-center">Posts</h2>
-      <PostList posts={posts} setPosts={setPosts} />
+      {posts.length === 0 ? (
+        <p className="text-center opacity-70">No posts yet</p>
+      ) : (
+        <PostList posts={posts} setPosts={setPosts} />
+      )}
+
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         className="fixed md:bottom-4 right-4 bottom-20 z-50 btn btn-primary flex gap-2 items-center"
