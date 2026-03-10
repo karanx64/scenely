@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import Modal from "./Modal";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function SharePostModal({ postId, onClose }) {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [shareResult, setShareResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -16,39 +17,37 @@ export default function SharePostModal({ postId, onClose }) {
         setResults([]);
         return;
       }
+
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/search?name=${searchQuery}`,
-        );
-        const data = await res.json();
-        setResults(data);
+        const { data, error } = await supabase
+          .from("users")
+          .select("id, username, avatar")
+          .ilike("username", `%${searchQuery}%`)
+          .limit(20);
+
+        if (error) throw error;
+        setResults(data || []);
       } catch (err) {
         console.error("Search error:", err);
       }
     };
+
     fetchUsers();
   }, [searchQuery]);
 
   const handleShare = async () => {
-    if (!selectedUser) return;
+    if (!selectedUser || !user) return;
 
     const body = {
-      recipientId: selectedUser._id,
-      postId,
+      sender_id: user.id,
+      recipient_id: selectedUser.id,
+      post_id: postId,
+      text: null,
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/messages`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const { error } = await supabase.from("messages").insert(body);
+      if (error) throw error;
 
       setShareResult("success");
     } catch (err) {
@@ -75,22 +74,22 @@ export default function SharePostModal({ postId, onClose }) {
 
         {results.length > 0 && (
           <ul className="max-h-40 overflow-y-auto mb-3 space-y-2">
-            {results.map((user) => (
+            {results.map((foundUser) => (
               <li
-                key={user._id}
+                key={foundUser.id}
                 onClick={() => {
-                  setSelectedUser(user);
+                  setSelectedUser(foundUser);
                   setSearchQuery("");
                   setResults([]);
                 }}
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-base-200 cursor-pointer"
               >
                 <img
-                  src={user.avatar}
-                  alt={user.username}
+                  src={foundUser.avatar}
+                  alt={foundUser.username}
                   className="w-8 h-8 rounded-full object-cover"
                 />
-                <span className="text-base-content">{user.username}</span>
+                <span className="text-base-content">{foundUser.username}</span>
               </li>
             ))}
           </ul>
@@ -110,7 +109,7 @@ export default function SharePostModal({ postId, onClose }) {
         <button
           onClick={handleShare}
           className="btn btn-primary w-full"
-          disabled={!selectedUser}
+          disabled={!selectedUser || !user}
         >
           Share
         </button>
