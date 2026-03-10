@@ -38,8 +38,15 @@ export default function Home() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-center text-4xl mb-6">Home</h1>
+    <div className="scene-page">
+      <div className="scene-page__header">
+        <p className="scene-eyebrow">Scene Feed</p>
+        <h1 className="scene-title">Frames Worth Posting</h1>
+        <p className="scene-subtitle">
+          A cleaner, sharper feed built around the still itself. Less chrome,
+          more scene.
+        </p>
+      </div>
       {loading ? (
         <div className="flex justify-center py-4">
           <Loader type="spinner" size="md" />

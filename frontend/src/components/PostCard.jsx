@@ -1,21 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Popcorn,
-  TvMinimalPlay,
-  HeartPlus,
-  Eye,
-  Share,
-  Trash2,
-} from "lucide-react";
+import { useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Heart, Eye, Share, Trash2 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../contexts/AuthContext";
 import SharePostModal from "./SharePostModal";
 import Modal from "./Modal";
 import Loader from "./Loader";
+import usePostEngagement from "../hooks/usePostEngagement";
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, onOpen }) {
   const { user } = useAuth();
   const [index, setIndex] = useState(0);
   const indexRef = useRef(0);
@@ -23,92 +15,11 @@ export default function PostCard({ post }) {
   const debounceDelay = 300;
 
   const images = post.image_urls || [];
-
-  const [likesCount, setLikesCount] = useState(0);
-  const [viewsCount, setViewsCount] = useState(0);
-  const [liked, setLiked] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [likeLoading, setLikeLoading] = useState(false);
-
-  // Fetch initial likes and views count
-  useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        // Get likes count
-        const { count: likesCount } = await supabase
-          .from("likes")
-          .select("*", { count: "exact", head: true })
-          .eq("post_id", post.id);
-
-        setLikesCount(likesCount || 0);
-
-        // Check if current user liked this post
-        if (user) {
-          const { data: userLike } = await supabase
-            .from("likes")
-            .select("id")
-            .eq("post_id", post.id)
-            .eq("user_id", user.id)
-            .maybeSingle();
-
-          setLiked(!!userLike);
-        }
-
-        // Get views count
-        const { count: viewsCount } = await supabase
-          .from("views")
-          .select("*", { count: "exact", head: true })
-          .eq("post_id", post.id);
-
-        setViewsCount(viewsCount || 0);
-      } catch (err) {
-        console.error("Error fetching counts:", err);
-      }
-    };
-
-    fetchCounts();
-  }, [post.id, user]);
-
-  // Track view after 2 seconds
-  useEffect(() => {
-    const timeout = setTimeout(async () => {
-      try {
-        let viewerId = user?.id;
-
-        if (!viewerId) {
-          viewerId = localStorage.getItem("viewerId");
-          if (!viewerId) {
-            viewerId = crypto.randomUUID();
-            localStorage.setItem("viewerId", viewerId);
-          }
-        }
-
-        // Check if already viewed
-        const { data: existingView } = await supabase
-          .from("views")
-          .select("id")
-          .eq("post_id", post.id)
-          .eq("user_id", viewerId)
-          .maybeSingle();
-
-        if (!existingView) {
-          const { error } = await supabase
-            .from("views")
-            .insert({ post_id: post.id, user_id: viewerId });
-
-          if (!error) {
-            setViewsCount((prev) => prev + 1);
-          }
-        }
-      } catch (err) {
-        console.error("View tracking error:", err);
-      }
-    }, 2000);
-
-    return () => clearTimeout(timeout);
-  }, [post.id, user]);
+  const { likesCount, viewsCount, liked, likeLoading, handleLike } =
+    usePostEngagement(post.id, user);
 
   indexRef.current = index;
 
@@ -132,41 +43,6 @@ export default function PostCard({ post }) {
     setIndex(i);
   };
 
-  const handleLike = async () => {
-    if (likeLoading || !user) return;
-    setLikeLoading(true);
-
-    try {
-      if (liked) {
-        // Unlike
-        const { error } = await supabase
-          .from("likes")
-          .delete()
-          .eq("post_id", post.id)
-          .eq("user_id", user.id);
-
-        if (error) throw error;
-
-        setLiked(false);
-        setLikesCount((prev) => prev - 1);
-      } else {
-        // Like
-        const { error } = await supabase
-          .from("likes")
-          .insert({ post_id: post.id, user_id: user.id });
-
-        if (error) throw error;
-
-        setLiked(true);
-        setLikesCount((prev) => prev + 1);
-      }
-    } catch (err) {
-      console.error("Like error:", err);
-    } finally {
-      setLikeLoading(false);
-    }
-  };
-
   const handleDelete = async () => {
     setDeleting(true);
     try {
@@ -188,6 +64,18 @@ export default function PostCard({ post }) {
 
   const postUserId = post.user_id;
   const isOwner = user && postUserId === user.id;
+  const username = post.users?.username || "Unknown";
+  const avatar = post.users?.avatar;
+  const createdAt = post.created_at
+    ? new Intl.DateTimeFormat("en", {
+        month: "short",
+        day: "numeric",
+        year:
+          new Date(post.created_at).getFullYear() === new Date().getFullYear()
+            ? undefined
+            : "numeric",
+      }).format(new Date(post.created_at))
+    : "";
 
   let startX = 0;
 
@@ -199,102 +87,172 @@ export default function PostCard({ post }) {
   };
 
   return (
-    <div className="card w-full bg-base-100 shadow-md rounded-2xl">
-      <div
-        className={`relative aspect-square bg-black overflow-visible rounded-2xl rounded-b-none`}
-        onTouchStart={(e) => (startX = e.touches[0].clientX)}
-        onTouchEnd={handleSwipe}
-      >
-        <div className="absolute top-0 left-0 z-15 flex items-center text-white/50 cursor-default hover:text-white/80 transition-all duration-300">
-          {post.emoji && <p className="text-xl">{post.emoji}</p>}
-          {post.media?.type === "movie" && (
-            <Popcorn size={20} className="inline" />
-          )}
-          {post.media?.type === "tv" && (
-            <TvMinimalPlay size={20} className="inline" />
-          )}
+    <article className="scene-card">
+      <div className="scene-card__header">
+        <div className="scene-card__author">
+          <div className="scene-card__avatar">
+            {avatar ? (
+              <img src={avatar} alt={username} />
+            ) : (
+              <div className="scene-card__avatar-fallback">
+                {username.slice(0, 2).toUpperCase()}
+              </div>
+            )}
+          </div>
+          <div className="scene-card__identity">
+            <p className="scene-card__name">{username}</p>
+            <div className="scene-card__meta">
+              {createdAt && <span>{createdAt}</span>}
+              {post.media?.type && (
+                <>
+                  <span className="scene-card__meta-dot" />
+                  <span>{post.media.type}</span>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
-        {images.map((img, i) => (
-          <img
-            key={i}
-            src={img}
-            alt={`Post ${i}`}
-            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 rounded-2xl ${
-              i === index ? "opacity-100 z-10" : "opacity-0 z-0"
-            }`}
-          />
-        ))}
-
-        {images.length > 1 && (
-          <div className="flex justify-evenly absolute bottom-0 z-15 w-full p-1 text-primary-content/50">
-            <button onClick={prev} className="rounded-4xl border-1">
-              <ChevronLeft size={16} />
-            </button>
-
-            <button onClick={next} className="rounded-4xl border-1">
-              <ChevronRight size={16} />
-            </button>
-          </div>
+        {isOwner && (
+          <button
+            type="button"
+            className="scene-icon-button"
+            onClick={() => setShowDeleteModal(true)}
+          >
+            <Trash2 size={16} />
+          </button>
         )}
       </div>
 
-      <div className="card-body p-1">
-        <div className="flex">
-          {post.media?.title && (
-            <p className="text-sm text-base-content/60 inline-flex justify-center">
-              {post.media.title}
-              {post.media.year && ` (${post.media.year})`}
-            </p>
+      <div
+        className="scene-card__frame"
+        role="button"
+        tabIndex={0}
+        onTouchStart={(e) => (startX = e.touches[0].clientX)}
+        onTouchEnd={handleSwipe}
+        onClick={() => onOpen(post.id)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onOpen(post.id);
+          }
+        }}
+      >
+        <div className="scene-card__overlay" />
+
+        {images.length > 0 ? (
+          images.map((img, i) => (
+            <img
+              key={i}
+              src={img}
+              alt={`Post ${i + 1}`}
+              className={`scene-card__image ${
+                i === index
+                  ? "scene-card__image--active"
+                  : "scene-card__image--inactive"
+              }`}
+            />
+          ))
+        ) : (
+          <div className="scene-card__empty">No image</div>
+        )}
+
+        <div className="scene-card__content">
+          <div className="scene-card__content-main">
+            {(post.media?.title || post.emoji) && (
+              <p className="scene-card__title">
+                {post.emoji && (
+                  <span className="scene-card__title-emoji">{post.emoji}</span>
+                )}
+                {post.media?.title}
+                {post.media.year && (
+                  <span className="scene-card__year">{post.media.year}</span>
+                )}
+              </p>
+            )}
+          </div>
+
+          {images.length > 1 && (
+            <div className="scene-card__dots">
+              {images.map((_, dotIndex) => (
+                <button
+                  key={dotIndex}
+                  type="button"
+                  aria-label={`Go to image ${dotIndex + 1}`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setIndex(dotIndex);
+                  }}
+                  className={`scene-card__dot ${
+                    dotIndex === index ? "scene-card__dot--active" : ""
+                  }`}
+                />
+              ))}
+            </div>
           )}
         </div>
 
-        <div className="flex justify-between items-center text-sm mt-0 relative bottom-0">
-          <span
-            onClick={handleLike}
-            className={`text-base-content/60 flex items-center gap-1 cursor-pointer ${
-              likeLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-          >
-            {likeLoading ? (
-              <Loader type="spinner" size="sm" />
-            ) : (
-              <span className="text-base-content/60 flex items-center gap-1">
-                {likesCount}
-                <HeartPlus
-                  size={20}
-                  className={`text-base-content/60 ${
-                    liked ? "text-red-500 fill-red-500" : ""
-                  }`}
-                />
-              </span>
-            )}
-          </span>
+        {images.length > 1 && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous image"
+              onClick={(event) => {
+                event.stopPropagation();
+                prev();
+              }}
+              className="scene-card__nav scene-card__nav--left"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              aria-label="Next image"
+              onClick={(event) => {
+                event.stopPropagation();
+                next();
+              }}
+              className="scene-card__nav scene-card__nav--right"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </>
+        )}
+      </div>
 
-          <span className="text-base-content/60 flex items-center gap-1 cursor-pointer">
-            <Share
-              size={20}
-              className="inline"
-              onClick={() => setShowShareModal(true)}
-            />
-          </span>
-
-          <span className="text-base-content/60 flex items-center gap-1">
-            {viewsCount} <Eye size={20} className="inline" />
+      <div className="scene-card__footer">
+        <div className="scene-metric scene-metric--ghost">
+          <span className="inline-flex items-center gap-2">
+            <Eye size={16} />
+            {viewsCount}
           </span>
         </div>
 
-        {post.caption && <p>{post.caption}</p>}
+        <button
+          type="button"
+          className="scene-action scene-card__share"
+          onClick={() => setShowShareModal(true)}
+        >
+          <Share size={18} className="inline" />
+          <span>Share</span>
+        </button>
 
-        {/* Show delete button only if user owns the post */}
-        {isOwner && (
-          <button
-            className="btn btn-error btn-xs rounded-none rounded-bl-lg top-0 z-15 right-0 absolute"
-            onClick={() => setShowDeleteModal(true)}
-          >
-            <Trash2 size={20} />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={handleLike}
+          className={`scene-action scene-card__like ${
+            liked ? "scene-action--active" : ""
+          } ${likeLoading ? "opacity-50" : ""}`}
+        >
+          {likeLoading ? (
+            <Loader type="spinner" size="sm" />
+          ) : (
+            <>
+              <Heart size={18} className={liked ? "fill-current" : ""} />
+              <span>{likesCount}</span>
+            </>
+          )}
+        </button>
 
         {showShareModal && (
           <SharePostModal
@@ -315,6 +273,6 @@ export default function PostCard({ post }) {
           </Modal>
         )}
       </div>
-    </div>
+    </article>
   );
 }

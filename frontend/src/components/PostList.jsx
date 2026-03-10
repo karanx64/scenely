@@ -1,7 +1,10 @@
 import PostCard from "./PostCard";
-import { useEffect } from "react";
+import PostLightbox from "./PostLightbox";
+import { useEffect, useState } from "react";
 
 function PostList({ posts, setPosts }) {
+  const [lightboxIndex, setLightboxIndex] = useState(null);
+
   useEffect(() => {
     const handle = (e) => {
       const deletedId = e.detail;
@@ -18,11 +21,37 @@ function PostList({ posts, setPosts }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 bg-base-100 text-base-content">
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
-      ))}
-    </div>
+    <>
+      <div className="scene-feed">
+        {posts.map((post) => (
+          <PostCard
+            key={post.id}
+            post={post}
+            onOpen={(postId) =>
+              setLightboxIndex(posts.findIndex((item) => item.id === postId))
+            }
+          />
+        ))}
+      </div>
+
+      {lightboxIndex !== null && (
+        <PostLightbox
+          posts={posts}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onPrevPost={() =>
+            setLightboxIndex((prev) =>
+              prev === 0 ? posts.length - 1 : prev - 1,
+            )
+          }
+          onNextPost={() =>
+            setLightboxIndex((prev) =>
+              prev === posts.length - 1 ? 0 : prev + 1,
+            )
+          }
+        />
+      )}
+    </>
   );
 }
 export default PostList;
