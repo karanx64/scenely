@@ -22,8 +22,7 @@ export default function PostCard({ post }) {
   const lastNavTime = useRef(0);
   const debounceDelay = 300;
 
-  // Handle both Supabase (image_urls) and MongoDB (imageUrls) format
-  const images = post.image_urls || post.imageUrls || [];
+  const images = post.image_urls || [];
 
   const [likesCount, setLikesCount] = useState(0);
   const [viewsCount, setViewsCount] = useState(0);
@@ -187,12 +186,7 @@ export default function PostCard({ post }) {
     }
   };
 
-  // Get username - handle both Supabase (users object) and MongoDB (userId.username) format
-  const username = post.users?.username || post.userId?.username || "Unknown";
-  const userAvatar = post.users?.avatar || post.userId?.avatar || "";
-
-  // Handle both user_id (Supabase) and userId (MongoDB)
-  const postUserId = post.user_id || post.userId?._id || post.userId;
+  const postUserId = post.user_id;
   const isOwner = user && postUserId === user.id;
 
   let startX = 0;

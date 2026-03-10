@@ -5,7 +5,7 @@ function PostList({ posts, setPosts }) {
   useEffect(() => {
     const handle = (e) => {
       const deletedId = e.detail;
-      setPosts((prev) => prev.filter((p) => p.id !== deletedId)); // Changed from _id to id
+      setPosts((prev) => prev.filter((p) => p.id !== deletedId));
     };
     window.addEventListener("postDeleted", handle);
     return () => window.removeEventListener("postDeleted", handle);
@@ -20,7 +20,7 @@ function PostList({ posts, setPosts }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 bg-base-100 text-base-content">
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} /> // Changed from _id to id
+        <PostCard key={post.id} post={post} />
       ))}
     </div>
   );

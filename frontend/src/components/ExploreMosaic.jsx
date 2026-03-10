@@ -17,17 +17,13 @@ export default function ExploreMosaic({ posts }) {
       columnClassName="flex flex-col gap-1"
     >
       {posts.map((post, postIndex) => {
-        // Handle both Supabase (image_urls) and MongoDB (imageUrls)
-        const images = post.image_urls || post.imageUrls || [];
+        const images = post.image_urls || [];
         const currentImage = images[0];
         const randomHeight = Math.floor(Math.random() * 10) + 300;
 
-        // Use Supabase id or MongoDB _id
-        const postId = post.id || post._id;
-
         return (
           <div
-            key={postId}
+            key={post.id}
             className="relative bg-black overflow-hidden cursor-pointer"
             style={{ height: `${randomHeight}px` }}
           >
