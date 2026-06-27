@@ -106,7 +106,6 @@ export default function UserProfile() {
             )}
             <div className="flex flex-col justify-between items-center pt-2">
               <p className="font-bold">{user.username}</p>
-              <p>{user.email}</p>
             </div>
           </div>
 
@@ -137,9 +136,8 @@ export default function UserProfile() {
             <div className="flex flex-col gap-2 items-center">
               <button
                 onClick={handleFollowToggle}
-                className={`px-4 py-2 rounded ${
-                  isFollowing ? "bg-red-500" : "bg-blue-500"
-                } text-white w-full`}
+                className={`px-4 py-2 rounded ${isFollowing ? "bg-red-500" : "bg-blue-500"
+                  } text-white w-full`}
               >
                 {isFollowing ? "Unfollow" : "Follow"}
               </button>

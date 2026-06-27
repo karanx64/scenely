@@ -69,15 +69,6 @@ export default function Register() {
             required
           />
           <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
-          />
-          <input
             type="password"
             name="password"
             placeholder="Password"
@@ -103,14 +94,6 @@ export default function Register() {
             <a href="/login" className="text-primary hover:underline">
               Login
             </a>
-          </p>
-          <p className="text-sm text-center mt-8 ">
-            For guest login, <br />
-            use below credentials <br />
-            user1@mail.com | user1 <br />
-            user2@mail.com | user2 <br />
-            user3@mail.com | user3 <br />
-            user4@mail.com | user4
           </p>
         </div>
       </form>

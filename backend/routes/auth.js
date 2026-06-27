@@ -11,12 +11,12 @@ const router = express.Router();
 //register
 router.post("/register", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
 
     // check if user already exists
-    const existing = await User.findOne({ email });
+    const existing = await User.findOne({ username });
     if (existing)
-      return res.status(400).json({ message: "Email already in use" });
+      return res.status(400).json({ message: "username already in use" });
 
     //hash password
 
@@ -25,7 +25,7 @@ router.post("/register", async (req, res) => {
 
     //create user
 
-    const newUser = new User({ username, email, password: hash });
+    const newUser = new User({ username, password: hash });
     await newUser.save();
     res.status(201).json({ message: "User resgistered successfully" });
   } catch (err) {
@@ -38,9 +38,9 @@ router.post("/register", async (req, res) => {
 // login
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username });
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -56,7 +56,6 @@ router.post("/login", async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
-        email: user.email,
         hasAvatar: user.hasAvatar,
       },
     });
@@ -88,7 +87,6 @@ router.get("/me", verifyToken, async (req, res) => {
     res.json({
       _id: user._id,
       username: user.username,
-      email: user.email,
       hasAvatar: user.hasAvatar,
       avatar: user.avatar,
       followers: validFollowerIds,

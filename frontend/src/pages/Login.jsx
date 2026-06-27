@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
 export default function Login() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false); // Add loading state
 
@@ -61,10 +61,10 @@ export default function Login() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-10">
         <div className="flex flex-col gap-2 w-80">
           <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
+            type="text"
+            name="username"
+            placeholder="username"
+            value={formData.user}
             onChange={handleChange}
             className="input input-bordered w-full"
             required
@@ -96,14 +96,7 @@ export default function Login() {
               Register
             </a>
           </p>
-          <p className="text-sm text-center mt-8 ">
-            For guest login, <br />
-            use below credentials <br />
-            user1@mail.com | user1 <br />
-            user2@mail.com | user2 <br />
-            user3@mail.com | user3 <br />
-            user4@mail.com | user4
-          </p>
+
         </div>
       </form>
     </div>

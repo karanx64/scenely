@@ -77,7 +77,6 @@ export default function Profile() {
             />
             <div className="flex flex-col justify-between items-center pt-2">
               <p className="font-bold">{user.username}</p>
-              <p>{user.email}</p>
             </div>
           </div>
 

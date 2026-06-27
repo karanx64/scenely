@@ -82,8 +82,6 @@ function SearchUsers({ onUserSelect }) {
                 )}
                 <div>
                   <p className="font-medium ">{user.username}</p>{" "}
-                  {/* Adjusted text color */}
-                  <p className="text-sm ">{user.email}</p>
                 </div>
               </li>
             ))}
@@ -164,8 +162,7 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
   const handleDeleteConversation = async (participantId) => {
     try {
       const res = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
+        `${import.meta.env.VITE_API_URL
         }/messages/conversation/${participantId}`,
         {
           method: "DELETE",
@@ -222,11 +219,10 @@ export default function ConversationList({ userId, onSelect, selectedId }) {
                 <li key={conv._id} className="flex items-center">
                   <button
                     onClick={() => onSelect(participant._id, participant)}
-                    className={`flex-1 text-left px-4 py-2 rounded-3xl focus:outline-none focus:ring-2 focus:ring-primary ${
-                      isSelected
+                    className={`flex-1 text-left px-4 py-2 rounded-3xl focus:outline-none focus:ring-2 focus:ring-primary ${isSelected
                         ? "bg-primary text-primary-content font-bold" // Used specific purple
                         : "bg-primary text-primary-content font-bold" // Adjusted hover for light background, text color
-                    }`}
+                      }`}
                   >
                     <p className="font-medium">{participant.username}</p>
                   </button>

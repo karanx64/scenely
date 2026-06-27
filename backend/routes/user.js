@@ -162,7 +162,7 @@ router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId)
       .select(
-        "-password -email", // hide sensitive info
+        "-password -username", // hide sensitive info
       )
       .populate("followers", "username avatar")
       .populate("following", "username avatar");

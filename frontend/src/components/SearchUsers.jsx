@@ -87,7 +87,6 @@ export default function SearchUsers() {
               )}
               <div>
                 <p className="font-medium">{user.username}</p>
-                <p className="text-sm text-gray-500">{user.email}</p>
               </div>
             </li>
           ))}
