@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import getCroppedImage from "../utils/cropImage";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,6 @@ export default function SelectAvatar() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const imageRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
