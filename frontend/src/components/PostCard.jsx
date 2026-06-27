@@ -166,30 +166,21 @@ export default function PostCard({ post }) {
   };
 
   return (
-    <div className="card w-full bg-base-100 shadow-md rounded-2xl">
+    <div className="card w-full bg-base-100 shadow-sm  rounded-lg">
       <div
-        className={`relative aspect-square bg-black overflow-visible rounded-2xl rounded-b-none`}
+        className={`relative aspect-square bg-black overflow-visible rounded-lg rounded-b-none`}
         onTouchStart={(e) => (startX = e.touches[0].clientX)}
         onTouchEnd={handleSwipe}
       >
-        <div className="absolute  top-0 left-0 z-15 flex items-center text-white/50 cursor-default hover:text-white/80 transition-all duration-300">
-          {post.emoji && <p className="text-xl  ">{post.emoji}</p>}
-          {post.media.type === "movie" && (
-            <Popcorn size={20} className="inline" />
-          )}
-          {post.media.type === "tv" && (
-            <TvMinimalPlay size={20} className="inline" />
-          )}
-        </div>
+
 
         {images.map((img, i) => (
           <img
             key={i}
             src={img}
             alt={`Post ${i}`}
-            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 rounded-2xl ${
-              i === index ? "opacity-100 z-10" : "opacity-0 z-0"
-            }`}
+            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 rounded-2xl ${i === index ? "opacity-100 z-10" : "opacity-0 z-0"
+              }`}
           />
         ))}
 
@@ -207,9 +198,16 @@ export default function PostCard({ post }) {
       </div>
 
       <div className="card-body p-1">
-        <div className="flex ">
+        <div className="flex">
+
           {post.media?.title && (
-            <p className="text-sm text-base-content/60 inline-flex justify-center">
+            <p className="text-sm text-base-content/60 inline-flex justify-center gap-1">
+              {post.media.type === "movie" && (
+                <Popcorn size={20} className="" />
+              )}
+              {post.media.type === "tv" && (
+                <TvMinimalPlay size={20} className="" />
+              )}
               {post.media.title}
               {post.media.year && ` (${post.media.year})`}{" "}
               {/* Correctly display year in brackets */}
@@ -223,9 +221,8 @@ export default function PostCard({ post }) {
               handleLike();
               setLiked((prev) => !prev);
             }}
-            className={`text-base-content/60 flex items-center gap-1 ${
-              likeLoading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`text-base-content/60 flex items-center gap-1 ${likeLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             disabled={likeLoading}
           >
             {likeLoading ? (
@@ -235,9 +232,8 @@ export default function PostCard({ post }) {
                 {likesCount}
                 <HeartPlus
                   size={20}
-                  className={`text-base-content/60 ${
-                    liked ? "text-red-500" : ""
-                  }`}
+                  className={`text-base-content/60 ${liked ? "text-red-500" : ""
+                    }`}
                 />
               </span>
             )}
@@ -252,7 +248,12 @@ export default function PostCard({ post }) {
           </span>
         </div>
 
-        {post.caption && <p>{post.caption}</p>}
+        <div className="flex gap-1 align-">
+          {post.emoji && <span className="">{post.emoji}</span>}
+
+          {post.caption && <span>{post.caption}</span>}
+        </div>
+
 
         {/* show delete button only on profile page */}
         {location.pathname === "/profile" &&
