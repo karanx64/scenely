@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
-import scenely from "../../public/scenely.png";
+import scenely from "/scenely.png";
 import { useState } from "react";
 
 const navItems = [
@@ -28,9 +28,8 @@ export default function Sidebar() {
   return (
     <div className="hidden md:flex h-screen bg-base-100 text-base-content shadow-md sticky top-0 left-0 ">
       <div
-        className={`flex flex-col justify-evenly overflow-y-auto overflow-x-hidden ${
-          collapsed ? "w-20" : "w-60"
-        } transition-all duration-300`}
+        className={`flex flex-col justify-evenly overflow-y-auto overflow-x-hidden ${collapsed ? "w-20" : "w-60"
+          } transition-all duration-300`}
         style={{ height: "100vh" }} // Enforce consistent height
       >
         {/* Logo */}
@@ -53,10 +52,9 @@ export default function Sidebar() {
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `inline-flex items-center justify-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${
-                    isActive
-                      ? "bg-primary text-primary-content"
-                      : "hover:bg-secondary/50"
+                  `inline-flex items-center justify-center gap-3 px-4 font-medium transition-colors rounded-r-4xl h-20 ${isActive
+                    ? "bg-primary text-primary-content"
+                    : "hover:bg-secondary/50"
                   }`
                 }
               >
