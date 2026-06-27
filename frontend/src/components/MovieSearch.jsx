@@ -55,7 +55,7 @@ const MovieSearch = ({ media, setMedia }) => {
         placeholder="Enter movie or series name"
         className="input input-bordered w-full"
       />
-      <button onClick={clearResults} className="btn btn-error btn-sm">
+      <button onClick={clearResults} type="button" className="w-100 btn btn-error btn-sm">
         Clear
       </button>
       {mediaResults.length > 0 && (
