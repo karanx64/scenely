@@ -52,8 +52,10 @@ cd frontend && npm i
 cd ..
 cd backend && npm i
 ```
+ 3. Create ```.env``` file and copy environment variables from ```env.sample``` and replace placeholder values with real values, i.e. create mongodb database and cloudinary cloud and appropriate presets.
 
- 3. Start the dev server (from scenely/ folder.)
+
+ 4. Start the dev server (from scenely/ folder.)
     Scenely uses ```concurrently``` to start frontend and backend at once.
 ```bash
 npm run dev
