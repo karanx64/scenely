@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { X } from "lucide-react"
 
 export default function Modal({
   onClose,
@@ -30,7 +31,7 @@ export default function Modal({
           className="absolute top-3 right-3 text-base-content/70 hover:text-error text-xl"
           aria-label="Close"
         >
-          ✖
+          <X />
         </button>
         {title && <h2 className="text-lg font-bold mb-2">{title}</h2>}
         {description && <p className="mb-4">{description}</p>}
