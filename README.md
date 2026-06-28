@@ -1,0 +1,134 @@
+# scenely
+
+## Table of Contents
+
+- [Description](#description)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Key Dependencies](#key-dependencies)
+- [Available Scripts](#available-scripts)
+- [API Endpoints](#api-endpoints)
+- [Project Structure](#project-structure)
+- [Development Setup](#development-setup)
+- [Contributors](#contributors)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Description
+
+scenely; a social /s media platform built for cinephiles and otakus to share the screenshots of the media they are watching and find scenes worthy of sharing with other like minded individuals. no comments. no negativity.
+
+## Showcase and exaples:
+
+## Tech Stack
+
+- **Node.js, Express.js**
+- **React.js**
+- **Tailwind CSS, daisyUI, lucide icons**
+- **mongodb**
+
+**Notable libraries:** cloudinary, multer
+
+## Quick Start
+
+
+1. Clone the repository
+```bash
+git clone https://github.com/karanx64/scenely.git
+```
+
+ 2. Install dependencies
+```bash
+cd scenely && npm i
+cd frontend && npm i
+cd ..
+cd backend && npm i
+```
+
+ 3. Start the dev server (from scenely/ folder.)
+    Scenely uses ```concurrently``` to start frontend and backend at once.
+```bash
+npm run dev
+```
+
+## Project Structure
+
+```
+.
+├── backend
+│   ├── config
+│   │   └── env.js
+│   ├── env.sample
+│   ├── middleware
+│   │   └── auth.js
+│   ├── models
+│   │   ├── Message.js
+│   │   ├── Post.js
+│   │   └── User.js
+│   ├── package.json
+│   ├── routes
+│   │   ├── auth.js
+│   │   ├── message.js
+│   │   ├── posts.js
+│   │   ├── upload.js
+│   │   └── user.js
+│   ├── server.js
+│   └── utils
+│       └── cloudinary.js
+├── frontend
+│   ├── env.sample
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── public
+│   │   ├── _redirects
+│   │   └── scenely.png
+│   ├── src
+│   │   ├── App.jsx
+│   │   ├── components
+│   │   │   ├── BottomNav.jsx
+│   │   │   ├── ExploreMosaic.jsx
+│   │   │   ├── FollowersModal.jsx
+│   │   │   ├── Layout.jsx
+│   │   │   ├── Loader.jsx
+│   │   │   ├── Messages
+│   │   │   │   ├── ConversationList.jsx
+│   │   │   │   └── MessageThread.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── MovieSearch.jsx
+│   │   │   ├── PostCard.jsx
+│   │   │   ├── PostList.jsx
+│   │   │   ├── PostPreview.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   ├── SearchUsers.jsx
+│   │   │   ├── SharePostModal.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── ThemeSwitcher.jsx
+│   │   │   ├── UploadForm.jsx
+│   │   │   └── UserAvatar.jsx
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   ├── pages
+│   │   │   ├── Explore.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Messages.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── SelectAvatar.jsx
+│   │   │   ├── Settings.jsx
+│   │   │   ├── Upload.jsx
+│   │   │   └── UserProfile.jsx
+│   │   └── utils
+│   │       └── cropImage.js
+│   ├── tailwind.config.js
+│   └── vite.config.js
+└── package.json
+```
+
+## License
+
+This project is licensed under the **ISC** License.
+
+---
