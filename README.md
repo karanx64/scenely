@@ -4,22 +4,29 @@
 
 - [Description](#description)
 - [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
+- [Showcase](#showcase)
 - [Quick Start](#quick-start)
-- [Key Dependencies](#key-dependencies)
-- [Available Scripts](#available-scripts)
-- [API Endpoints](#api-endpoints)
 - [Project Structure](#project-structure)
-- [Development Setup](#development-setup)
-- [Contributors](#contributors)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Description
 
 scenely; a social /s media platform built for cinephiles and otakus to share the screenshots of the media they are watching and find scenes worthy of sharing with other like minded individuals. no comments. no negativity.
 
-## Showcase and exaples:
+## Showcase
+
+**Register Page**|**Login Page**
+|:--:|:--:|
+<img width="1920" height="1080" alt="Screenshot from 2026-06-28 20-29-19" src="https://github.com/user-attachments/assets/fcd8ca5b-ec49-4827-b28c-865ff2a43822" />|<img width="1920" height="1080" alt="Screenshot from 2026-06-28 20-29-15" src="https://github.com/user-attachments/assets/bab4c88a-6f1d-475e-bb94-02f7e79a9850" />
+**Upload Page**|**Home Page**
+<img width="1920" height="1080" alt="Screenshot from 2026-06-28 00-16-33" src="https://github.com/user-attachments/assets/518258ff-9b5d-4a80-ac6b-4608e74a1127" />|<img width="1920" height="1080" alt="Screenshot from 2026-06-28 16-20-41" src="https://github.com/user-attachments/assets/8618ccfe-c95e-494e-b6d8-638720ff0f44" />
+**Messages**|**Settings**
+<img width="1920" height="1080" alt="Screenshot from 2026-06-28 16-20-28" src="https://github.com/user-attachments/assets/0a8fe3a0-1f22-41ac-8853-e7f5d5823143" />|<img width="1920" height="1080" alt="Screenshot from 2026-06-28 16-20-13" src="https://github.com/user-attachments/assets/ef7e27b8-e8e3-4e7c-8a06-ca908493ed1e" />
+**Profile**|
+<img width="1920" height="1080" alt="Screenshot from 2026-06-28 16-20-06" src="https://github.com/user-attachments/assets/4df25455-33c6-42f0-b6a8-0436b1867119" />|
+
+
+
 
 ## Tech Stack
 
@@ -131,4 +138,3 @@ npm run dev
 
 This project is licensed under the **ISC** License.
 
----
