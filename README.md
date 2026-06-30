@@ -3,8 +3,8 @@
 ## Table of Contents
 
 - [Description](#description)
-- [Tech Stack](#tech-stack)
 - [Showcase](#showcase)
+- [Tech Stack](#tech-stack)
 - [Quick Start](#quick-start)
 - [Project Structure](#project-structure)
 - [License](#license)
